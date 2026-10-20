@@ -60,12 +60,69 @@ export const saveContactLocally = ({ profile, winnerKey = "", existingIndex = nu
 };
 
 /**
+ * Verifica antes de iniciar o quiz (e antes de salvar) se o e-mail ou celular
+ * já participou do quiz (checando tanto o Supabase quanto o localStorage).
+ * @param {Object} params
+ * @param {string} params.email
+ * @param {string} params.phone
+ * @param {number|null} [params.ignoreLocalIndex=null]
+ * @returns {Promise<{ emailExists: boolean, phoneExists: boolean }>}
+ */
+export const checkStudentAlreadyExists = async ({ email, phone, ignoreLocalIndex = null }) => {
+    const cleanEmail = String(email ?? "").trim().toLowerCase();
+    const cleanPhoneDigits = String(phone ?? "").replace(/\D/g, "");
+
+    // 1. Checagem rápida no localStorage deste navegador
+    const localContacts = getSavedContacts();
+    let localEmailExists = false;
+    let localPhoneExists = false;
+
+    localContacts.forEach((entry, index) => {
+        if (ignoreLocalIndex !== null && index === ignoreLocalIndex) return;
+        if (cleanEmail && String(entry.email ?? "").trim().toLowerCase() === cleanEmail) {
+            localEmailExists = true;
+        }
+        if (cleanPhoneDigits && String(entry.celular ?? "").replace(/\D/g, "") === cleanPhoneDigits) {
+            localPhoneExists = true;
+        }
+    });
+
+    // 2. Checagem no banco Supabase via /api/alunos?action=check
+    try {
+        const url = new URL(SUPABASE_API_ENDPOINT, window.location.origin);
+        url.searchParams.set("action", "check");
+        url.searchParams.set("email", cleanEmail);
+        url.searchParams.set("celular", String(phone ?? "").trim());
+
+        const response = await fetch(url.toString(), {
+            method: "GET",
+            headers: { Accept: "application/json" }
+        });
+
+        if (response.ok) {
+            const remote = await response.json();
+            return {
+                emailExists: Boolean(remote.emailExists) || localEmailExists,
+                phoneExists: Boolean(remote.phoneExists) || localPhoneExists
+            };
+        }
+    } catch (error) {
+        console.warn("Verificação remota indisponível, aplicando validação local:", error);
+    }
+
+    return {
+        emailExists: localEmailExists,
+        phoneExists: localPhoneExists
+    };
+};
+
+/**
  * Envia os dados do aluno (`nome`, `celular`, `email`, `idade`, `area_vencedora`)
  * para o banco de dados Supabase através da rota `/api/alunos` da Vercel.
  * @param {Object} params
  * @param {Object} params.profile
  * @param {string} params.winnerKey
- * @returns {Promise<boolean>}
+ * @returns {Promise<{ ok: boolean, status?: number, error?: string, field?: string }>}
  */
 export const submitQuizTelemetry = async ({ profile, winnerKey }) => {
     const payload = {
@@ -88,13 +145,18 @@ export const submitQuizTelemetry = async ({ profile, winnerKey }) => {
         if (!response.ok) {
             const errorBody = await response.json().catch(() => ({}));
             console.warn("Aviso ao salvar no Supabase:", errorBody.error || response.status);
-            return false;
+            return {
+                ok: false,
+                status: response.status,
+                error: errorBody.error || "Não foi possível salvar os dados.",
+                field: errorBody.field
+            };
         }
 
-        return true;
+        return { ok: true };
     } catch (error) {
         console.error("Falha de rede ao enviar dados para /api/alunos:", error);
-        return false;
+        return { ok: false, error: "Erro de conexão com o servidor." };
     }
 };
 

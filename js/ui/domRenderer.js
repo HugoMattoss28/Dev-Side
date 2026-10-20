@@ -536,16 +536,31 @@ export const renderQuizResult = (resultContainer, { quizResult, avatar, profile,
         });
 };
 
+const DEFAULT_FIELD_ERRORS = Object.freeze({
+    fullName: "Informe seu nome e sobrenome completos (apenas letras, mín. 9 caracteres).",
+    nickname: "Escolha um apelido entre 2 e 24 caracteres.",
+    email: "Digite um endereço de e-mail válido.",
+    age: "Idade entre 10 e 99.",
+    phone: "Informe um celular válido com DDD (ex: (17) 99123-4567)."
+});
+
 /**
  * Sincroniza o estado visual de validação e o atributo `aria-invalid` após interação.
  * @param {HTMLInputElement} inputElement
+ * @param {boolean} [triggerShake=false]
  */
 export const syncInputValidationUI = (inputElement, triggerShake = false) => {
     if (!inputElement || !inputElement.name) return;
 
     const isValid = validateProfileField(inputElement.name, inputElement.value);
+    const errorEl = document.getElementById(`${inputElement.name}Error`);
 
-    // Mantém compatibilidade com custom validation e :user-invalid
+    if (errorEl && DEFAULT_FIELD_ERRORS[inputElement.name]) {
+        errorEl.innerHTML = `<i class="bi bi-exclamation-circle-fill" aria-hidden="true"></i> <span></span>`;
+        const span = errorEl.querySelector("span");
+        if (span) span.textContent = DEFAULT_FIELD_ERRORS[inputElement.name];
+    }
+
     inputElement.setCustomValidity(isValid ? "" : "Campo inválido");
     inputElement.classList.toggle("is-invalid", !isValid);
     inputElement.classList.toggle("is-valid", isValid);
@@ -554,6 +569,30 @@ export const syncInputValidationUI = (inputElement, triggerShake = false) => {
     if (!isValid && triggerShake) {
         animateInvalidShake(inputElement);
     }
+};
+
+/**
+ * Exibe um erro customizado (ex: E-mail ou Celular duplicado no banco) no campo correspondente.
+ * @param {string} fieldName
+ * @param {string} customMessage
+ */
+export const markFieldWithCustomError = (fieldName, customMessage) => {
+    const inputElement = document.getElementById(fieldName);
+    const errorEl = document.getElementById(`${fieldName}Error`);
+    if (!inputElement) return;
+
+    if (errorEl) {
+        errorEl.innerHTML = `<i class="bi bi-shield-exclamation" aria-hidden="true"></i> <span></span>`;
+        const span = errorEl.querySelector("span");
+        if (span) span.textContent = customMessage;
+    }
+
+    inputElement.setCustomValidity(customMessage);
+    inputElement.classList.add("is-invalid");
+    inputElement.classList.remove("is-valid");
+    inputElement.setAttribute("aria-invalid", "true");
+    inputElement.focus();
+    animateInvalidShake(inputElement);
 };
 
 /**

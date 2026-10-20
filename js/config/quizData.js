@@ -10,7 +10,6 @@ export const RPG_CLASSES = Object.freeze({
         name: "Programação",
         iconClass: "bi-code-slash",
         folderName: "Programacao",
-        spriteCount: { masculino: 40, feminino: 40 },
         descriptions: {
             primaryHigh:
                 "Você tende a transformar problemas em código: testa uma ideia, encontra o erro, ajusta e continua até fazer funcionar.",
@@ -26,8 +25,7 @@ export const RPG_CLASSES = Object.freeze({
         id: "design",
         name: "Design",
         iconClass: "bi-palette2",
-        folderName: "Designer",
-        spriteCount: { masculino: 40, feminino: 40 },
+        folderName: "Design",
         descriptions: {
             primaryHigh:
                 "Você dificilmente aceita uma interface só porque ela funciona. Quer entender onde o usuário vai clicar, o que ele vai sentir e o que pode ser melhorado.",
@@ -44,7 +42,6 @@ export const RPG_CLASSES = Object.freeze({
         name: "Redes e Internet",
         iconClass: "bi-hdd-network",
         folderName: "Redes",
-        spriteCount: { masculino: 40, feminino: 40 },
         descriptions: {
             primaryHigh:
                 "Seu perfil combina com quem gosta de descobrir onde uma conexão quebra, entender o caminho dos dados e fazer dispositivos, serviços e redes trabalharem juntos.",
@@ -60,8 +57,7 @@ export const RPG_CLASSES = Object.freeze({
         id: "seguranca",
         name: "Cibersegurança",
         iconClass: "bi-shield-lock-fill",
-        folderName: "Ciberseguranca",
-        spriteCount: { masculino: 40, feminino: 40 },
+        folderName: "Cibersegurança",
         descriptions: {
             primaryHigh:
                 "Seu primeiro impulso é procurar a brecha: descobrir como um sistema poderia ser explorado, onde alguém poderia entrar e como impedir que isso aconteça.",

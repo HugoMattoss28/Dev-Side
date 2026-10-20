@@ -7,14 +7,19 @@
 
 import { createQuizStore, calculateQuizResult } from "./state/quizStore.js";
 import { resolveAvatarAsset } from "./services/avatarService.js";
-import { saveContactLocally, submitQuizTelemetry } from "./services/storageService.js";
+import {
+    checkStudentAlreadyExists,
+    saveContactLocally,
+    submitQuizTelemetry
+} from "./services/storageService.js";
 import {
     formatBrazilianPhone,
     updateHudProgress,
     renderProfileStep,
     renderQuestionStep,
     renderQuizResult,
-    syncInputValidationUI
+    syncInputValidationUI,
+    markFieldWithCustomError
 } from "./ui/domRenderer.js";
 import {
     animateStepExit,
@@ -140,6 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 profile: currentState.profile,
                 onRestart: () => {
                     isSubmittingQuiz = false;
+                    store.resetStore();
                     resultContainer.hidden = true;
                     if (quizSection) quizSection.hidden = false;
                     if (quizHud) quizHud.hidden = false;
@@ -174,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
             interaction.interacted = true;
             touchedInputs.set(target, interaction);
 
-            if (interaction.blurred) {
+            if (interaction.blurred || target.classList.contains("is-invalid")) {
                 syncInputValidationUI(target, false);
             }
 
@@ -228,9 +234,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // 4. Cliques nos botões de navegação (Avançar, Voltar e Ver Pontuação)
-    stageContainer.addEventListener("click", (event) => {
+    stageContainer.addEventListener("click", async (event) => {
         const button = event.target.closest("button");
-        if (!button || button.disabled) return;
+        if (!button || button.disabled || isTransitioning) return;
 
         const { currentStep } = store.getState();
 
@@ -239,11 +245,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (currentStep === 0) {
                 const currentState = store.getState();
-                const savedIndex = saveContactLocally({
-                    profile: currentState.profile,
-                    existingIndex: currentState.contactRecordIndex
+                const originalHtml = button.innerHTML;
+                button.disabled = true;
+                button.innerHTML = `<i class="bi bi-hourglass-split" aria-hidden="true"></i> <span>Verificando dados...</span>`;
+
+                const { emailExists, phoneExists } = await checkStudentAlreadyExists({
+                    email: currentState.profile.email,
+                    phone: currentState.profile.phone,
+                    ignoreLocalIndex: currentState.contactRecordIndex
                 });
-                store.setContactRecordIndex(savedIndex);
+
+                button.innerHTML = originalHtml;
+                button.disabled = false;
+
+                if (emailExists) {
+                    markFieldWithCustomError(
+                        "email",
+                        "Este e-mail já realizou o quiz DevSide! Utilize outro e-mail."
+                    );
+                    return;
+                }
+
+                if (phoneExists) {
+                    markFieldWithCustomError(
+                        "phone",
+                        "Este número de celular já realizou o quiz DevSide!"
+                    );
+                    return;
+                }
             }
 
             goToStep(currentStep + 1, "forward", true);

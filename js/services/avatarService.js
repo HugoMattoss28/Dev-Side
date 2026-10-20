@@ -1,15 +1,15 @@
 /**
  * @file avatarService.js
- * @description Serviço determinístico de seleção de sprites, geração de QR Code
- *              e composição em <canvas> do Card Colecionável ("Eu fui no Seja Fatec")
- *              com Apelido + Avatar integrados na mesma imagem PNG.
+ * @description Serviço determinístico de seleção de sprites (mapeado para a nova
+ *              estrutura `avatar/Personagens/{Area}/{Masculino|Feminino}/{Branca|Morena}/`),
+ *              geração de QR Code e composição em <canvas> do Card Colecionável ("Eu fui no Seja Fatec").
  */
 
 import { RPG_CLASSES } from "../config/quizData.js";
 
 const AVATAR_BASE_PATH = "avatar/Personagens/";
 const ALLOWED_GENDERS = ["Masculino", "Feminino"];
-const ALLOWED_SKINS = ["skin_1", "skin_2"];
+const ALLOWED_SKINS = ["Branca", "Morena"];
 
 const CLASS_ACCENT_COLORS = Object.freeze({
     programacao: { primary: "#38bdf8", secondary: "#0284c7" },
@@ -17,6 +17,78 @@ const CLASS_ACCENT_COLORS = Object.freeze({
     redes: { primary: "#34d399", secondary: "#059669" },
     seguranca: { primary: "#a98cff", secondary: "#7c4dff" }
 });
+
+/**
+ * Gera uma faixa de nomes de arquivos (`prefix1.png` até `prefixN.png`),
+ * pulando eventuais números ausentes na pasta.
+ */
+const rangeFiles = (prefix, max, skipSet = new Set()) => {
+    const list = [];
+    for (let i = 1; i <= max; i += 1) {
+        if (!skipSet.has(i)) {
+            list.push(`${prefix}${i}.png`);
+        }
+    }
+    return list;
+};
+
+/**
+ * Retorna a lista exata dos arquivos .png existentes em cada pasta da estrutura:
+ * `avatar/Personagens/{Area}/{Masculino|Feminino}/{Branca|Morena}/`
+ *
+ * @param {string} areaKey
+ * @param {"Masculino" | "Feminino"} genderFolder
+ * @param {"Branca" | "Morena"} skinFolder
+ * @returns {string[]}
+ */
+export const getFolderSpriteFiles = (areaKey, genderFolder, skinFolder) => {
+    // 1. Redes possui apenas personagem1..20 (em Feminino/Morena não há o 6)
+    if (areaKey === "redes") {
+        const skip =
+            genderFolder === "Feminino" && skinFolder === "Morena"
+                ? new Set([6])
+                : new Set();
+        return rangeFiles("personagem", 20, skip);
+    }
+
+    // 2. Cibersegurança e Programação em Masculino/Branca possuem 48 sprites (12 + 12 + 24)
+    if (
+        (areaKey === "seguranca" || areaKey === "programacao") &&
+        genderFolder === "Masculino" &&
+        skinFolder === "Branca"
+    ) {
+        return [
+            ...rangeFiles("cortar1_personagem", 12),
+            ...rangeFiles("cortar2_personagem", 12),
+            ...rangeFiles("personagem", 24)
+        ];
+    }
+
+    // 3. Cibersegurança em Masculino/Morena possui 44 sprites (12 + 10 + 22)
+    if (areaKey === "seguranca" && genderFolder === "Masculino" && skinFolder === "Morena") {
+        return [
+            ...rangeFiles("cortar1_personagem", 12),
+            ...rangeFiles("cortar2_personagem", 10),
+            ...rangeFiles("personagem", 22)
+        ];
+    }
+
+    // 4. Design em Masculino/Branca possui 39 sprites (não há cortar1_personagem6.png)
+    if (areaKey === "design" && genderFolder === "Masculino" && skinFolder === "Branca") {
+        return [
+            ...rangeFiles("cortar1_personagem", 10, new Set([6])),
+            ...rangeFiles("cortar2_personagem", 10),
+            ...rangeFiles("personagem", 20)
+        ];
+    }
+
+    // 5. Padrão das demais pastas: 40 sprites (10 + 10 + 20)
+    return [
+        ...rangeFiles("cortar1_personagem", 10),
+        ...rangeFiles("cortar2_personagem", 10),
+        ...rangeFiles("personagem", 20)
+    ];
+};
 
 /**
  * Gera um número determinístico entre 1 e `limit` a partir de uma string semente.
@@ -42,8 +114,8 @@ export const computeDeterministicIndex = (seedText, limit) => {
  * @returns {"Masculino" | "Feminino" | null}
  */
 export const resolveAvatarGenderFolder = (genderValue, email) => {
-    if (genderValue === "masculino") return "Masculino";
-    if (genderValue === "feminino") return "Feminino";
+    if (genderValue === "masculino" || genderValue === "Masculino") return "Masculino";
+    if (genderValue === "feminino" || genderValue === "Feminino") return "Feminino";
     if (genderValue === "trans") {
         const cleanEmail = String(email || "padrao").trim().toLowerCase();
         return computeDeterministicIndex(cleanEmail, 2) === 1 ? "Masculino" : "Feminino";
@@ -52,13 +124,13 @@ export const resolveAvatarGenderFolder = (genderValue, email) => {
 };
 
 /**
- * Converte o valor do tom de pele na pasta correspondente de sprites.
+ * Converte o valor do tom de pele para a nova estrutura de pastas ("Branca" ou "Morena").
  * @param {string} skinTone
- * @returns {"skin_1" | "skin_2" | null}
+ * @returns {"Branca" | "Morena" | null}
  */
 export const resolveSkinFolder = (skinTone) => {
-    if (skinTone === "clara") return "skin_1";
-    if (skinTone === "escura") return "skin_2";
+    if (skinTone === "clara" || skinTone === "Branca" || skinTone === "skin_1") return "Branca";
+    if (skinTone === "escura" || skinTone === "Morena" || skinTone === "skin_2") return "Morena";
     return null;
 };
 
@@ -66,28 +138,27 @@ export const resolveSkinFolder = (skinTone) => {
  * Constrói os caminhos de imagem seguros a partir de parâmetros validados.
  * @param {string} areaKey
  * @param {string} genderFolder
- * @param {string} skinFolder
+ * @param {string} skinInput
  * @param {number} spriteNumber
  * @returns {Object | null}
  */
-export const buildAvatarPathsFromParams = (areaKey, genderFolder, skinFolder, spriteNumber) => {
+export const buildAvatarPathsFromParams = (areaKey, genderFolder, skinInput, spriteNumber) => {
     const classConfig = RPG_CLASSES[areaKey];
     if (!classConfig) return null;
     if (!ALLOWED_GENDERS.includes(genderFolder)) return null;
-    if (!ALLOWED_SKINS.includes(skinFolder)) return null;
+
+    const skinFolder = resolveSkinFolder(skinInput);
+    if (!skinFolder || !ALLOWED_SKINS.includes(skinFolder)) return null;
+
+    const files = getFolderSpriteFiles(areaKey, genderFolder, skinFolder);
+    if (!files.length) return null;
 
     const num = Number(spriteNumber);
-    if (!Number.isInteger(num) || num < 1 || num > 40) return null;
+    if (!Number.isInteger(num) || num < 1 || num > files.length) return null;
 
-    const primaryPrefix = areaKey === "seguranca" ? "seguranca" : classConfig.folderName;
-    const alternatePrefix =
-        primaryPrefix.charAt(0) === primaryPrefix.charAt(0).toLowerCase()
-            ? primaryPrefix.charAt(0).toUpperCase() + primaryPrefix.slice(1)
-            : primaryPrefix.toLowerCase();
-
-    const baseDir = `${AVATAR_BASE_PATH}${classConfig.folderName}/${genderFolder}/sprites/${skinFolder}/`;
-    const imagePath = `${baseDir}${primaryPrefix} (${num}).png`;
-    const fallbackImagePath = `${baseDir}${alternatePrefix} (${num}).png`;
+    const fileName = files[num - 1];
+    const baseDir = `${AVATAR_BASE_PATH}${classConfig.folderName}/${genderFolder}/${skinFolder}/`;
+    const imagePath = `${baseDir}${fileName}`;
 
     return {
         areaKey,
@@ -96,8 +167,9 @@ export const buildAvatarPathsFromParams = (areaKey, genderFolder, skinFolder, sp
         genderFolder,
         skinFolder,
         spriteNumber: num,
+        fileName,
         imagePath,
-        fallbackImagePath
+        fallbackImagePath: imagePath
     };
 };
 
@@ -119,12 +191,11 @@ export const resolveAvatarAsset = ({ areaKey, gender, skinTone, email }) => {
 
     if (!genderFolder || !skinFolder) return null;
 
-    const genderKey = genderFolder.toLowerCase();
-    const maxSprites = classConfig.spriteCount[genderKey] || 40;
+    const files = getFolderSpriteFiles(areaKey, genderFolder, skinFolder);
     const cleanEmail = String(email || "aluno_padrao").trim().toLowerCase();
 
-    const seed = `${cleanEmail}${areaKey}${genderFolder}${skinTone}`;
-    const spriteNumber = computeDeterministicIndex(seed, maxSprites);
+    const seed = `${cleanEmail}${areaKey}${genderFolder}${skinFolder}`;
+    const spriteNumber = computeDeterministicIndex(seed, files.length);
 
     return buildAvatarPathsFromParams(areaKey, genderFolder, skinFolder, spriteNumber);
 };
@@ -175,7 +246,7 @@ const drawRoundedRect = (ctx, x, y, width, height, radius) => {
 };
 
 /**
- * Carrega uma imagem do sprite (com fallback de maiúscula/minúscula) e retorna o HTMLImageElement.
+ * Carrega a imagem do sprite no navegador usando encodeURI para suportar caracteres como `ç`.
  * @param {Object} avatar
  * @returns {Promise<HTMLImageElement>}
  */
@@ -183,20 +254,13 @@ export const loadAvatarSpriteImage = (avatar) =>
     new Promise((resolve, reject) => {
         const img = new Image();
         img.crossOrigin = "anonymous";
-        let triedFallback = false;
 
         img.onload = () => resolve(img);
         img.onerror = () => {
-            if (!triedFallback && avatar.fallbackImagePath && avatar.fallbackImagePath !== img.src) {
-                triedFallback = true;
-                avatar.imagePath = avatar.fallbackImagePath;
-                img.src = avatar.fallbackImagePath;
-                return;
-            }
             reject(new Error(`Falha ao carregar sprite: ${avatar.imagePath}`));
         };
 
-        img.src = avatar.imagePath;
+        img.src = encodeURI(avatar.imagePath);
     });
 
 /**
@@ -329,7 +393,6 @@ export const renderCollectibleAvatarCard = async ({ avatar, nickname }) => {
     ctx.fillStyle = panelGrad;
     ctx.fill();
 
-    // Borda brilhante no painel do nome
     const borderGrad = ctx.createLinearGradient(footerX, footerY, footerX + footerW, footerY + footerH);
     borderGrad.addColorStop(0, "#e8b94b");
     borderGrad.addColorStop(0.5, accent.primary);

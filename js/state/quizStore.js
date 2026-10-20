@@ -6,7 +6,8 @@
 
 import { QUIZ_QUESTIONS, RPG_CLASSES } from "../config/quizData.js";
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const FULL_NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:\s+[A-Za-zÀ-ÖØ-öø-ÿ]+)+$/;
 const HIGH_XP_THRESHOLD = 30;
 const MAX_XP_REFERENCE = 50;
 
@@ -20,10 +21,17 @@ export const validateProfileField = (fieldName, rawValue) => {
     const value = String(rawValue ?? "").trim();
 
     switch (fieldName) {
-        case "fullName":
-            return value.length > 8;
+        case "fullName": {
+            const normalized = value.replace(/\s+/g, " ");
+            // Exige mais de 8 caracteres, pelo menos Nome + Sobrenome e apenas letras
+            if (normalized.length <= 8 || !FULL_NAME_REGEX.test(normalized)) return false;
+            // Bloqueia sequências falsas de uma única letra repetida (ex: "aaaaa aaaaa")
+            const lettersOnly = normalized.replace(/\s/g, "").toLowerCase();
+            if (/^([a-zà-ÿ])\1+$/.test(lettersOnly)) return false;
+            return true;
+        }
         case "nickname":
-            return value.length > 0;
+            return value.length >= 2 && value.length <= 24;
         case "email":
             return EMAIL_REGEX.test(value);
         case "age": {
@@ -32,7 +40,13 @@ export const validateProfileField = (fieldName, rawValue) => {
         }
         case "phone": {
             const digitsOnly = value.replace(/\D/g, "");
-            return digitsOnly.length >= 10 && digitsOnly.length <= 11;
+            if (digitsOnly.length < 10 || digitsOnly.length > 11) return false;
+            const ddd = Number(digitsOnly.slice(0, 2));
+            if (ddd < 11 || ddd > 99) return false;
+            const localNumber = digitsOnly.slice(2);
+            // Bloqueia números repetidos falsos como 999999999 ou 111111111
+            if (/^(\d)\1+$/.test(localNumber)) return false;
+            return true;
         }
         case "gender":
             return ["masculino", "feminino", "trans"].includes(value);
@@ -213,6 +227,21 @@ export const createQuizStore = () => {
 
         setContactRecordIndex(index) {
             state.contactRecordIndex = index;
+        },
+
+        resetStore() {
+            state.currentStep = 0;
+            state.contactRecordIndex = null;
+            state.profile = {
+                fullName: "",
+                nickname: "",
+                email: "",
+                age: "",
+                phone: "",
+                gender: "",
+                skinTone: ""
+            };
+            state.answers = {};
         }
     };
 };

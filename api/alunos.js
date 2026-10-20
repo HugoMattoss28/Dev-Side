@@ -1,8 +1,8 @@
 /**
  * @file api/alunos.js
  * @description Vercel Serverless Function blindada (CORS estrito, Rate Limit por IP,
- *              Sanitização contra XSS e Validação de Payload) para salvar (POST)
- *              e listar (GET) os alunos da Etec no Supabase.
+ *              Sanitização contra XSS, Validação de Dados Reais e Bloqueio de Duplicidade
+ *              de E-mail/Celular) para o banco Supabase.
  */
 
 const ALLOWED_ORIGINS = new Set([
@@ -14,9 +14,10 @@ const ALLOWED_ORIGINS = new Set([
 ]);
 
 const VALID_AREAS = new Set(["programacao", "design", "redes", "seguranca"]);
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const FULL_NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:\s+[A-Za-zÀ-ÖØ-öø-ÿ]+)+$/;
 
-// Rate Limiting em memória por IP (máx 6 envios por minuto por IP)
+// Rate Limiting em memória por IP
 const rateLimitMap = new Map();
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX_POSTS = 6;
@@ -41,6 +42,52 @@ const sanitizeText = (value, maxLength = 120) =>
         .replace(/[<>]/g, "")
         .slice(0, maxLength);
 
+const isValidBrazilianPhone = (digits) => {
+    if (digits.length < 10 || digits.length > 11) return false;
+    const ddd = Number(digits.slice(0, 2));
+    if (ddd < 11 || ddd > 99) return false;
+    const localNumber = digits.slice(2);
+    // Bloqueia sequências repetidas falsas como 999999999 ou 000000000
+    if (/^(\d)\1+$/.test(localNumber)) return false;
+    return true;
+};
+
+/**
+ * Consulta no Supabase se já existe um aluno com o mesmo e-mail ou celular.
+ */
+async function checkExistingStudent(endpoint, headers, email, celular) {
+    const queryUrl = new URL(endpoint);
+    queryUrl.searchParams.set("select", "id,email,celular");
+    queryUrl.searchParams.set(
+        "or",
+        `(email.eq.${email},celular.eq.${celular})`
+    );
+    queryUrl.searchParams.set("limit", "5");
+
+    const response = await fetch(queryUrl.toString(), {
+        method: "GET",
+        headers
+    });
+
+    if (!response.ok) {
+        return { emailExists: false, phoneExists: false };
+    }
+
+    const rows = await response.json();
+    if (!Array.isArray(rows)) {
+        return { emailExists: false, phoneExists: false };
+    }
+
+    const emailExists = rows.some(
+        (r) => String(r.email || "").toLowerCase() === email.toLowerCase()
+    );
+    const phoneExists = rows.some(
+        (r) => String(r.celular || "").replace(/\D/g, "") === celular.replace(/\D/g, "")
+    );
+
+    return { emailExists, phoneExists };
+}
+
 export default async function handler(req, res) {
     // 1. Verificação e Configuração de CORS (Diretriz 3 do seguranca.md)
     const origin = req.headers.origin || "";
@@ -62,7 +109,7 @@ export default async function handler(req, res) {
         return res.status(204).end();
     }
 
-    // 2. Leitura Segura das Chaves no Servidor (Diretriz 1 do seguranca.md)
+    // 2. Leitura Segura das Chaves no Servidor
     const supabaseUrl =
         process.env.SUPABASE_URL ||
         process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -88,7 +135,28 @@ export default async function handler(req, res) {
 
     try {
         // =====================================================================
-        // POST /api/alunos — Valida, sanitiza e insere um novo aluno
+        // GET /api/alunos?action=check — Verifica duplicidade na Etapa 0
+        // =====================================================================
+        if (req.method === "GET" && req.query?.action === "check") {
+            const checkEmail = sanitizeText(req.query.email || "", 160).toLowerCase();
+            const checkCelular = sanitizeText(req.query.celular || "", 20);
+
+            if (!checkEmail && !checkCelular) {
+                return res.status(400).json({ error: "Informe email ou celular para verificação." });
+            }
+
+            const result = await checkExistingStudent(
+                endpoint,
+                defaultHeaders,
+                checkEmail,
+                checkCelular
+            );
+
+            return res.status(200).json(result);
+        }
+
+        // =====================================================================
+        // POST /api/alunos — Valida, checa duplicidade e insere novo aluno
         // =====================================================================
         if (req.method === "POST") {
             const clientIp =
@@ -104,28 +172,64 @@ export default async function handler(req, res) {
 
             const { nome, celular, email, idade, area_vencedora } = req.body || {};
 
-            const cleanNome = sanitizeText(nome, 120);
+            const cleanNome = sanitizeText(nome, 120).replace(/\s+/g, " ");
             const cleanCelular = sanitizeText(celular, 20);
             const digitsPhone = cleanCelular.replace(/\D/g, "");
             const cleanEmail = sanitizeText(email, 160).toLowerCase();
             const parsedAge = Number(idade);
             const cleanArea = sanitizeText(area_vencedora, 30).toLowerCase();
 
-            // Validação rigorosa de Payload no Backend (Diretriz 4 do seguranca.md)
-            if (cleanNome.length <= 8) {
-                return res.status(400).json({ error: "Nome inválido (mínimo 9 caracteres)." });
+            // 1. Validação estrita de formato e integridade dos dados
+            if (cleanNome.length <= 8 || !FULL_NAME_REGEX.test(cleanNome)) {
+                return res.status(400).json({
+                    field: "fullName",
+                    error: "Informe seu nome e sobrenome completos (apenas letras)."
+                });
             }
-            if (digitsPhone.length < 10 || digitsPhone.length > 11) {
-                return res.status(400).json({ error: "Celular inválido (deve conter DDD + número)." });
+            if (!isValidBrazilianPhone(digitsPhone)) {
+                return res.status(400).json({
+                    field: "phone",
+                    error: "Informe um celular válido com DDD (ex: (17) 99123-4567)."
+                });
             }
             if (!EMAIL_REGEX.test(cleanEmail)) {
-                return res.status(400).json({ error: "E-mail em formato inválido." });
+                return res.status(400).json({
+                    field: "email",
+                    error: "Informe um endereço de e-mail válido."
+                });
             }
             if (!Number.isInteger(parsedAge) || parsedAge < 10 || parsedAge > 99) {
-                return res.status(400).json({ error: "Idade fora do intervalo permitido (10 a 99)." });
+                return res.status(400).json({
+                    field: "age",
+                    error: "Idade fora do intervalo permitido (10 a 99 anos)."
+                });
             }
             if (!VALID_AREAS.has(cleanArea)) {
-                return res.status(400).json({ error: "Área vencedora inválida." });
+                return res.status(400).json({
+                    error: "Área vencedora inválida."
+                });
+            }
+
+            // 2. Verificação de Duplicidade no Banco antes de inserir
+            const { emailExists, phoneExists } = await checkExistingStudent(
+                endpoint,
+                defaultHeaders,
+                cleanEmail,
+                cleanCelular
+            );
+
+            if (emailExists) {
+                return res.status(409).json({
+                    field: "email",
+                    error: "Este e-mail já realizou o quiz DevSide!"
+                });
+            }
+
+            if (phoneExists) {
+                return res.status(409).json({
+                    field: "phone",
+                    error: "Este número de celular já realizou o quiz DevSide!"
+                });
             }
 
             const payload = {
@@ -147,6 +251,13 @@ export default async function handler(req, res) {
 
             if (!response.ok) {
                 const errorDetail = await response.text();
+                // Trata erro de constraint UNIQUE do Postgres (código 23505)
+                if (errorDetail.includes("23505") || errorDetail.includes("duplicate key")) {
+                    return res.status(409).json({
+                        field: "email",
+                        error: "Este e-mail ou celular já está cadastrado no banco!"
+                    });
+                }
                 return res.status(response.status).json({
                     error: "Erro ao salvar aluno no Supabase.",
                     details: errorDetail
