@@ -323,6 +323,38 @@
     transform: translate3d(0, -2px, 0);
 }
 
+/* Variantes para Trilhas de Curso (Agro & Gestão) */
+.identity-option__card--agro {
+    border-color: rgba(52, 211, 153, 0.35);
+    color: #34d399;
+}
+.identity-option__input:checked + .identity-option__card--agro {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    color: #ffffff;
+    border-color: #34d399;
+    box-shadow: 0 0 20px rgba(52, 211, 153, 0.45);
+    transform: translate3d(0, -2px, 0);
+}
+
+.identity-option__card--gestao {
+    border-color: rgba(232, 185, 75, 0.4);
+    color: var(--color-gold-light);
+}
+.identity-option__input:checked + .identity-option__card--gestao {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    color: #ffffff;
+    border-color: var(--color-gold-light);
+    box-shadow: 0 0 20px rgba(232, 185, 75, 0.45);
+    transform: translate3d(0, -2px, 0);
+}
+
+.identity-option__subtitle {
+    font-size: 0.7rem;
+    font-weight: 400;
+    opacity: 0.82;
+    line-height: 1.25;
+}
+
 .identity-option__input:checked + .identity-option__card .identity-option__icon {
     transform: scale(1.15);
 }

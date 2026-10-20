@@ -1,10 +1,10 @@
 /**
  * @file quizStore.js
  * @description Gerenciamento de estado centralizado e funções puras para validação
- *              e cálculo de pontuação (XP) do Quiz DevSide.
+ *              e cálculo de pontuação (XP) multi-trilha (TI, Agronegócio e Gestão).
  */
 
-import { QUIZ_QUESTIONS, RPG_CLASSES } from "../config/quizData.js";
+import { QUIZ_QUESTIONS_BY_TRACK, RPG_CLASSES } from "../config/quizData.js";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const FULL_NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:\s+[A-Za-zÀ-ÖØ-öø-ÿ]+)+$/;
@@ -21,11 +21,11 @@ export const validateProfileField = (fieldName, rawValue) => {
     const value = String(rawValue ?? "").trim();
 
     switch (fieldName) {
+        case "track":
+            return ["ti", "agro", "gestao"].includes(value);
         case "fullName": {
             const normalized = value.replace(/\s+/g, " ");
-            // Exige mais de 8 caracteres, pelo menos Nome + Sobrenome e apenas letras
             if (normalized.length <= 8 || !FULL_NAME_REGEX.test(normalized)) return false;
-            // Bloqueia sequências falsas de uma única letra repetida (ex: "aaaaa aaaaa")
             const lettersOnly = normalized.replace(/\s/g, "").toLowerCase();
             if (/^([a-zà-ÿ])\1+$/.test(lettersOnly)) return false;
             return true;
@@ -44,7 +44,6 @@ export const validateProfileField = (fieldName, rawValue) => {
             const ddd = Number(digitsOnly.slice(0, 2));
             if (ddd < 11 || ddd > 99) return false;
             const localNumber = digitsOnly.slice(2);
-            // Bloqueia números repetidos falsos como 999999999 ou 111111111
             if (/^(\d)\1+$/.test(localNumber)) return false;
             return true;
         }
@@ -58,11 +57,12 @@ export const validateProfileField = (fieldName, rawValue) => {
 };
 
 /**
- * Verifica se todos os dados pessoais obrigatórios da Etapa 0 estão válidos.
+ * Verifica se todos os dados obrigatórios da Etapa 0 estão válidos (incluindo a Trilha).
  * @param {Object} profile
  * @returns {boolean}
  */
 export const isProfileComplete = (profile) =>
+    validateProfileField("track", profile.track) &&
     validateProfileField("fullName", profile.fullName) &&
     validateProfileField("nickname", profile.nickname) &&
     validateProfileField("email", profile.email) &&
@@ -72,20 +72,26 @@ export const isProfileComplete = (profile) =>
     validateProfileField("skinTone", profile.skinTone);
 
 /**
- * Calcula a pontuação completa (XP) e determina a classe principal e secundária.
- * Função pura: recebe apenas o mapa de respostas e retorna o resultado estruturado.
+ * Calcula a pontuação completa (XP) e determina a classe principal e secundária
+ * dentro da trilha selecionada (`ti`, `agro` ou `gestao`).
  * @param {Record<string, string[]>} answersMap
+ * @param {"ti" | "agro" | "gestao"} [track="ti"]
  * @returns {Object}
  */
-export const calculateQuizResult = (answersMap) => {
-    const totals = {
-        programacao: 0,
-        design: 0,
-        redes: 0,
-        seguranca: 0
-    };
+export const calculateQuizResult = (answersMap, track = "ti") => {
+    const activeTrack = ["ti", "agro", "gestao"].includes(track) ? track : "ti";
+    const questions = QUIZ_QUESTIONS_BY_TRACK[activeTrack] || QUIZ_QUESTIONS_BY_TRACK.ti;
 
-    for (const question of QUIZ_QUESTIONS) {
+    const classKeys = Object.keys(RPG_CLASSES).filter(
+        (key) => RPG_CLASSES[key].track === activeTrack
+    );
+
+    const totals = {};
+    for (const key of classKeys) {
+        totals[key] = 0;
+    }
+
+    for (const question of questions) {
         const selectedOptionIds = answersMap[question.id] ?? [];
 
         for (const optionId of selectedOptionIds) {
@@ -93,22 +99,22 @@ export const calculateQuizResult = (answersMap) => {
             if (!matchedOption) continue;
 
             for (const [classKey, points] of Object.entries(matchedOption.scores)) {
-                totals[classKey] += points;
+                if (classKey in totals) {
+                    totals[classKey] += points;
+                }
             }
         }
     }
 
-    const classKeys = Object.keys(RPG_CLASSES);
-
-    // Descobre a classe vencedora mantendo a mesma regra de desempate original
-    let winnerKey = "programacao";
+    // Descobre a classe vencedora na trilha ativa
+    let winnerKey = classKeys[0];
     for (const key of classKeys) {
         if (totals[key] > totals[winnerKey]) {
             winnerKey = key;
         }
     }
 
-    // Descobre a segunda classe com maior XP
+    // Descobre a segunda classe com maior XP na trilha ativa
     let runnerUpKey = null;
     for (const key of classKeys) {
         if (key === winnerKey) continue;
@@ -147,6 +153,7 @@ export const calculateQuizResult = (answersMap) => {
     });
 
     return {
+        track: activeTrack,
         totals,
         winnerKey,
         winnerClass,
@@ -166,9 +173,10 @@ export const calculateQuizResult = (answersMap) => {
 export const createQuizStore = () => {
     const state = {
         currentStep: 0,
-        totalQuestionSteps: QUIZ_QUESTIONS.length,
+        totalQuestionSteps: 10,
         contactRecordIndex: null,
         profile: {
+            track: "",
             fullName: "",
             nickname: "",
             email: "",
@@ -189,6 +197,10 @@ export const createQuizStore = () => {
 
         updateProfileField(field, value) {
             if (field in state.profile) {
+                // Se o aluno trocar de área de interesse (TI / Agro / Gestão), limpa respostas anteriores
+                if (field === "track" && state.profile.track !== value) {
+                    state.answers = {};
+                }
                 state.profile[field] = value;
             }
         },
@@ -214,7 +226,9 @@ export const createQuizStore = () => {
             if (step === 0) {
                 return isProfileComplete(state.profile);
             }
-            const question = QUIZ_QUESTIONS.find((q) => q.step === step);
+            const activeTrack = state.profile.track || "ti";
+            const questions = QUIZ_QUESTIONS_BY_TRACK[activeTrack] || QUIZ_QUESTIONS_BY_TRACK.ti;
+            const question = questions.find((q) => q.step === step);
             if (!question) return false;
             const selected = state.answers[question.id] ?? [];
             return selected.length > 0;
@@ -233,6 +247,7 @@ export const createQuizStore = () => {
             state.currentStep = 0;
             state.contactRecordIndex = null;
             state.profile = {
+                track: "",
                 fullName: "",
                 nickname: "",
                 email: "",
@@ -245,4 +260,3 @@ export const createQuizStore = () => {
         }
     };
 };
-

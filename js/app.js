@@ -84,7 +84,13 @@ document.addEventListener("DOMContentLoaded", () => {
             if (activeStep === 0) {
                 renderProfileStep(stageContainer, currentState.profile, stepValid);
             } else {
-                renderQuestionStep(stageContainer, activeStep, currentState.answers, stepValid);
+                renderQuestionStep(
+                    stageContainer,
+                    activeStep,
+                    currentState.answers,
+                    stepValid,
+                    currentState.profile.track || "ti"
+                );
             }
 
             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -111,7 +117,10 @@ document.addEventListener("DOMContentLoaded", () => {
             await animateStepExit(stageContainer, "forward");
 
             const currentState = store.getState();
-            const quizResult = calculateQuizResult(currentState.answers);
+            const quizResult = calculateQuizResult(
+                currentState.answers,
+                currentState.profile.track || "ti"
+            );
 
             const avatar = resolveAvatarAsset({
                 areaKey: quizResult.winnerKey,
@@ -208,12 +217,12 @@ document.addEventListener("DOMContentLoaded", () => {
         true
     );
 
-    // 3. Seleção de opções (Gênero, Tom de Pele e Alternativas das Perguntas)
+    // 3. Seleção de opções (Trilha, Gênero, Tom de Pele e Alternativas das Perguntas)
     stageContainer.addEventListener("change", (event) => {
         const target = event.target;
         if (!(target instanceof HTMLInputElement)) return;
 
-        if (target.name === "gender" || target.name === "skinTone") {
+        if (target.name === "track" || target.name === "gender" || target.name === "skinTone") {
             store.updateProfileField(target.name, target.value);
             const visualCard = target.closest(".identity-option, .skin-option");
             animateSelectionPulse(visualCard);

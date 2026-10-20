@@ -4,13 +4,27 @@
  *              Isola completamente a criação de elementos HTML da lógica de negócios.
  */
 
-import { IDENTITY_OPTIONS, QUIZ_QUESTIONS, SKIN_TONE_OPTIONS } from "../config/quizData.js";
+import {
+    IDENTITY_OPTIONS,
+    QUIZ_QUESTIONS_BY_TRACK,
+    SKIN_TONE_OPTIONS,
+    TRACK_OPTIONS
+} from "../config/quizData.js";
 import { validateProfileField } from "../state/quizStore.js";
 import {
     buildAvatarRescueQrData,
+    formatAvatarDownloadFilename,
     renderCollectibleAvatarCard
 } from "../services/avatarService.js";
 import { animateInvalidShake, attachReflectiveCardEffect } from "./motionController.js";
+
+/**
+ * Detecta se o usuário está acessando por um dispositivo móvel (celular/tablet).
+ * @returns {boolean}
+ */
+const isMobileViewportOrTouch = () =>
+    window.matchMedia("(max-width: 768px), (hover: none) and (pointer: coarse)").matches ||
+    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
 /**
  * Formata um número de telefone brasileiro no padrão (DD) 99999-9999.
@@ -79,6 +93,28 @@ export const renderProfileStep = (stageContainer, profileState, isValid) => {
     const fragment = document.createDocumentFragment();
     const wrapper = document.createElement("div");
 
+    const trackCardsHtml = TRACK_OPTIONS.map((trk) => {
+        const isChecked = profileState.track === trk.value ? "checked" : "";
+        return `
+            <div class="identity-option" data-stagger>
+                <input
+                    type="radio"
+                    class="identity-option__input"
+                    name="track"
+                    id="${trk.id}"
+                    value="${trk.value}"
+                    ${isChecked}
+                    required
+                >
+                <label class="identity-option__card ${trk.variantClass}" for="${trk.id}">
+                    <i class="bi ${trk.iconClass} identity-option__icon" aria-hidden="true"></i>
+                    <span class="identity-option__text">${trk.label}</span>
+                    <span class="identity-option__subtitle">${trk.subtitle}</span>
+                </label>
+            </div>
+        `;
+    }).join("");
+
     const identityCardsHtml = IDENTITY_OPTIONS.map((opt) => {
         const isChecked = profileState.gender === opt.value ? "checked" : "";
         return `
@@ -125,6 +161,13 @@ export const renderProfileStep = (stageContainer, profileState, isValid) => {
         <h2 class="quiz-card__title">Seus Dados de Aventureiro</h2>
 
         <div class="form-grid" id="profileFormFields">
+            <fieldset data-stagger>
+                <legend class="section-label">Qual área mais desperta seu interesse hoje?</legend>
+                <div class="identity-grid">
+                    ${trackCardsHtml}
+                </div>
+            </fieldset>
+
             <div class="field" data-stagger>
                 <label for="fullName" class="field__label">
                     <i class="bi bi-person-vcard" aria-hidden="true"></i>
@@ -296,14 +339,15 @@ export const renderProfileStep = (stageContainer, profileState, isValid) => {
  * @param {Record<string, string[]>} answersMap
  * @param {boolean} isStepValid
  */
-export const renderQuestionStep = (stageContainer, stepNumber, answersMap, isStepValid) => {
-    const question = QUIZ_QUESTIONS.find((q) => q.step === stepNumber);
+export const renderQuestionStep = (stageContainer, stepNumber, answersMap, isStepValid, track = "ti") => {
+    const questions = QUIZ_QUESTIONS_BY_TRACK[track] || QUIZ_QUESTIONS_BY_TRACK.ti;
+    const question = questions.find((q) => q.step === stepNumber);
     if (!question) return;
 
     const selectedIds = answersMap[question.id] ?? [];
     const isMultiple = question.type === "multiple";
     const inputType = isMultiple ? "checkbox" : "radio";
-    const isFinalQuestion = stepNumber === QUIZ_QUESTIONS.length;
+    const isFinalQuestion = stepNumber === questions.length;
 
     const fragment = document.createDocumentFragment();
     const wrapper = document.createElement("div");
@@ -431,6 +475,10 @@ export const renderQuizResult = (resultContainer, { quizResult, avatar, profile,
         )
         .join("");
 
+    const isMobile = isMobileViewportOrTouch();
+    const downloadLabel = isMobile ? "Baixar Meu Card" : "Baixar neste computador";
+    const downloadBtnVariant = isMobile ? "btn-action" : "btn-action btn-action--secondary";
+
     wrapper.innerHTML = `
         <div class="result-layout__sidebar">
             <div class="rpg-panel avatar-showcase" data-result-panel id="avatarCard">
@@ -445,7 +493,7 @@ export const renderQuizResult = (resultContainer, { quizResult, avatar, profile,
                 </div>
             </div>
 
-            <div class="rpg-panel qr-rescue" data-result-panel id="qrRescuePanel">
+            <div class="rpg-panel qr-rescue" data-result-panel id="qrRescuePanel" ${isMobile ? "hidden" : ""}>
                 <div class="qr-rescue__header">
                     <i class="bi bi-qr-code-scan" aria-hidden="true"></i>
                     <span>Baixar pelo Celular</span>
@@ -463,6 +511,28 @@ export const renderQuizResult = (resultContainer, { quizResult, avatar, profile,
                     Aponte a câmera do seu celular para abrir seu Card Colecionável e salvar na galeria.
                 </p>
             </div>
+
+            <button
+                type="button"
+                class="${downloadBtnVariant}"
+                id="btnDownloadCard"
+                data-result-panel
+                disabled
+            >
+                <i class="bi bi-download" aria-hidden="true"></i>
+                <span>${downloadLabel}</span>
+            </button>
+
+            <button
+                type="button"
+                class="btn-action btn-action--secondary"
+                id="btnShareCard"
+                data-result-panel
+                hidden
+            >
+                <i class="bi bi-share-fill" aria-hidden="true"></i>
+                <span>Compartilhar (WhatsApp / Stories)</span>
+            </button>
 
             <button
                 type="button"
@@ -508,6 +578,8 @@ export const renderQuizResult = (resultContainer, { quizResult, avatar, profile,
     const cardImg = resultContainer.querySelector("#collectibleCardImg");
     const qrRescuePanel = resultContainer.querySelector("#qrRescuePanel");
     const qrRescueImg = resultContainer.querySelector("#qrRescueImg");
+    const downloadBtn = resultContainer.querySelector("#btnDownloadCard");
+    const shareBtn = resultContainer.querySelector("#btnShareCard");
     const restartBtn = resultContainer.querySelector("#btnRestartQuiz");
 
     if (restartBtn && typeof onRestart === "function") {
@@ -521,19 +593,83 @@ export const renderQuizResult = (resultContainer, { quizResult, avatar, profile,
 
     attachReflectiveCardEffect(reflectiveCard);
 
-    const { qrCodeImageUrl } = buildAvatarRescueQrData(avatar, playerName);
-    if (qrRescueImg) {
+    const { rescueUrl, qrCodeImageUrl } = buildAvatarRescueQrData(avatar, playerName);
+    if (qrRescueImg && !isMobile) {
         qrRescueImg.src = qrCodeImageUrl;
     }
 
+    const filename = formatAvatarDownloadFilename(playerName, avatar.areaName);
+    let generatedBlob = null;
+    let generatedDataUrl = "";
+
     renderCollectibleAvatarCard({ avatar, nickname: playerName })
-        .then(({ dataUrl }) => {
+        .then(({ dataUrl, blob }) => {
+            generatedDataUrl = dataUrl;
+            generatedBlob = blob;
             cardImg.src = dataUrl;
             cardImg.alt = `Card DevSide Seja Fatec de ${playerName} — ${avatar.areaName}`;
+
+            if (downloadBtn) {
+                downloadBtn.disabled = false;
+            }
+
+            if (isMobile && typeof navigator.share === "function" && shareBtn && blob) {
+                shareBtn.hidden = false;
+            }
         })
         .catch(() => {
-            cardImg.src = avatar.imagePath;
+            cardImg.onerror = () => {
+                if (avatar.fallbackImagePath) {
+                    cardImg.src = encodeURI(avatar.fallbackImagePath);
+                }
+            };
+            cardImg.src = encodeURI(avatar.imagePath);
         });
+
+    downloadBtn?.addEventListener("click", () => {
+        if (generatedBlob) {
+            const blobUrl = URL.createObjectURL(generatedBlob);
+            const link = document.createElement("a");
+            link.href = blobUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 3000);
+            return;
+        }
+
+        if (generatedDataUrl) {
+            const link = document.createElement("a");
+            link.href = generatedDataUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        }
+    });
+
+    shareBtn?.addEventListener("click", async () => {
+        if (!generatedBlob || typeof navigator.share !== "function") return;
+        try {
+            const file = new File([generatedBlob], filename, { type: "image/png" });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    title: `Meu Card DevSide — Seja Fatec (${avatar.areaName})`,
+                    text: `Eu fui no Seja Fatec e descobri minha classe no DevSide: ${avatar.areaName}!`,
+                    files: [file]
+                });
+                return;
+            }
+            await navigator.share({
+                title: `Meu Card DevSide — Seja Fatec (${avatar.areaName})`,
+                text: `Eu fui no Seja Fatec e descobri minha classe no DevSide: ${avatar.areaName}!`,
+                url: rescueUrl
+            });
+        } catch {
+            // Cancelamento pelo usuário não é erro
+        }
+    });
 };
 
 const DEFAULT_FIELD_ERRORS = Object.freeze({

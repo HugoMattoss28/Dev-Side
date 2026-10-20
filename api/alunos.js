@@ -13,7 +13,23 @@ const ALLOWED_ORIGINS = new Set([
     "http://127.0.0.1:3000"
 ]);
 
-const VALID_AREAS = new Set(["programacao", "design", "redes", "seguranca"]);
+const VALID_AREAS = new Set([
+    // TI
+    "programacao",
+    "design",
+    "redes",
+    "seguranca",
+    // Agronegócio
+    "agrotech",
+    "agroprod",
+    "agroeco",
+    "agrolab",
+    // Gestão Empresarial
+    "lideranca",
+    "financas",
+    "marketing",
+    "operacoes"
+]);
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const FULL_NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:\s+[A-Za-zÀ-ÖØ-öø-ÿ]+)+$/;
 

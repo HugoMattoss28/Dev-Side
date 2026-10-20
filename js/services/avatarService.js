@@ -1,7 +1,7 @@
 /**
  * @file avatarService.js
- * @description Serviço determinístico de seleção de sprites (mapeado para a nova
- *              estrutura `avatar/Personagens/{Area}/{Masculino|Feminino}/{Branca|Morena}/`),
+ * @description Serviço determinístico de seleção de sprites (mapeado para a estrutura
+ *              `avatar/Personagens/{tecnologia|agronegocio|gestao}/{Classe}/{Masculino|Feminino}/{Branca|Morena}/`),
  *              geração de QR Code e composição em <canvas> do Card Colecionável ("Eu fui no Seja Fatec").
  */
 
@@ -12,10 +12,21 @@ const ALLOWED_GENDERS = ["Masculino", "Feminino"];
 const ALLOWED_SKINS = ["Branca", "Morena"];
 
 const CLASS_ACCENT_COLORS = Object.freeze({
+    // TI
     programacao: { primary: "#38bdf8", secondary: "#0284c7" },
     design: { primary: "#f472b6", secondary: "#db2777" },
     redes: { primary: "#34d399", secondary: "#059669" },
-    seguranca: { primary: "#a98cff", secondary: "#7c4dff" }
+    seguranca: { primary: "#a98cff", secondary: "#7c4dff" },
+    // Agronegócio
+    agrotech: { primary: "#34d399", secondary: "#059669" },
+    agroprod: { primary: "#84cc16", secondary: "#4d7c0f" },
+    agroeco: { primary: "#2dd4bf", secondary: "#0d9488" },
+    agrolab: { primary: "#38bdf8", secondary: "#0284c7" },
+    // Gestão Empresarial
+    lideranca: { primary: "#f59e0b", secondary: "#b45309" },
+    financas: { primary: "#eab308", secondary: "#a16207" },
+    marketing: { primary: "#f472b6", secondary: "#be185d" },
+    operacoes: { primary: "#60a5fa", secondary: "#2563eb" }
 });
 
 /**
@@ -160,6 +171,22 @@ export const buildAvatarPathsFromParams = (areaKey, genderFolder, skinInput, spr
     const baseDir = `${AVATAR_BASE_PATH}${classConfig.folderName}/${genderFolder}/${skinFolder}/`;
     const imagePath = `${baseDir}${fileName}`;
 
+    // Caso a pasta de Agro ou Gestão ainda esteja vazia esperando você colocar as fotos,
+    // usa automaticamente o fallback da pasta equivalente em `tecnologia/` para nunca quebrar!
+    const fallbackFolder = classConfig.fallbackFolderName || "tecnologia/Programacao";
+    const fallbackAreaKey =
+        classConfig.fallbackAreaKey ||
+        (fallbackFolder.endsWith("Redes")
+            ? "redes"
+            : fallbackFolder.endsWith("Design")
+              ? "design"
+              : fallbackFolder.endsWith("Cibersegurança")
+                ? "seguranca"
+                : "programacao");
+    const fallbackFiles = getFolderSpriteFiles(fallbackAreaKey, genderFolder, skinFolder);
+    const fallbackFile = fallbackFiles[(num - 1) % fallbackFiles.length];
+    const fallbackImagePath = `${AVATAR_BASE_PATH}${fallbackFolder}/${genderFolder}/${skinFolder}/${fallbackFile}`;
+
     return {
         areaKey,
         areaName: classConfig.name,
@@ -169,7 +196,7 @@ export const buildAvatarPathsFromParams = (areaKey, genderFolder, skinInput, spr
         spriteNumber: num,
         fileName,
         imagePath,
-        fallbackImagePath: imagePath
+        fallbackImagePath
     };
 };
 
@@ -254,9 +281,15 @@ export const loadAvatarSpriteImage = (avatar) =>
     new Promise((resolve, reject) => {
         const img = new Image();
         img.crossOrigin = "anonymous";
+        let triedFallback = false;
 
         img.onload = () => resolve(img);
         img.onerror = () => {
+            if (!triedFallback && avatar.fallbackImagePath && encodeURI(avatar.fallbackImagePath) !== img.src) {
+                triedFallback = true;
+                img.src = encodeURI(avatar.fallbackImagePath);
+                return;
+            }
             reject(new Error(`Falha ao carregar sprite: ${avatar.imagePath}`));
         };
 
