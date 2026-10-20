@@ -595,34 +595,81 @@
 
 .avatar-showcase {
     text-align: center;
+    padding: var(--space-4);
 }
 
-.avatar-showcase__frame {
+/* ==========================================================================
+   REFLECTIVE TRADING CARD MODERNA (3D Tilt + Holographic Glare a 60fps)
+   ========================================================================== */
+.reflective-card {
+    --glare-x: 50%;
+    --glare-y: 50%;
+    --glare-opacity: 0;
     position: relative;
     width: 100%;
-    min-height: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle at 50% 50%, rgba(124, 77, 255, 0.16), transparent 70%);
-    border-radius: var(--radius-md);
-    padding: var(--space-3);
+    max-width: 360px;
+    margin-inline: auto;
+    border-radius: 18px;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform 280ms var(--ease-out-quart), box-shadow 280ms var(--ease-out-quart);
+    box-shadow:
+        0 20px 45px rgba(0, 0, 0, 0.55),
+        0 0 24px rgba(232, 185, 75, 0.16);
+    cursor: grab;
+    background: #0b1022;
 }
 
-.avatar-showcase__img {
-    max-height: 360px;
-    width: auto;
-    object-fit: contain;
-    border-radius: var(--radius-sm);
-    filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.5));
+.reflective-card:hover {
+    box-shadow:
+        0 26px 55px rgba(0, 0, 0, 0.65),
+        0 0 32px rgba(232, 185, 75, 0.35),
+        0 0 45px rgba(124, 77, 255, 0.22);
 }
 
-.avatar-showcase__nickname {
-    margin-top: var(--space-3);
-    font-size: var(--text-xl);
-    font-weight: 800;
-    color: var(--color-gold-light);
-    letter-spacing: -0.01em;
+.reflective-card__img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 18px;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+/* Camada de Brilho Especular Interativo (segue o cursor/toque) */
+.reflective-card__glare {
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    pointer-events: none;
+    background: radial-gradient(
+        circle 220px at var(--glare-x) var(--glare-y),
+        rgba(255, 255, 255, 0.32) 0%,
+        rgba(255, 214, 107, 0.16) 35%,
+        transparent 75%
+    );
+    mix-blend-mode: overlay;
+    opacity: var(--glare-opacity);
+    transition: opacity var(--duration-normal) var(--ease-out-quart);
+    will-change: opacity;
+}
+
+/* Camada de Reflexo Diagonal Contínuo (Shimmer / Foil) */
+.reflective-card__sheen {
+    position: absolute;
+    inset: -60%;
+    pointer-events: none;
+    background: linear-gradient(
+        115deg,
+        transparent 38%,
+        rgba(255, 255, 255, 0.08) 45%,
+        rgba(255, 214, 107, 0.22) 50%,
+        rgba(169, 140, 255, 0.14) 54%,
+        transparent 62%
+    );
+    transform: translate3d(-45%, -45%, 0);
+    will-change: transform;
 }
 
 .btn-action {

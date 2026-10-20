@@ -253,3 +253,50 @@ export const animateResultReveal = (resultContainer) => {
     });
 };
 
+/**
+ * Aplica o efeito interativo "Reflective Card 3D" a 60fps via requestAnimationFrame.
+ * Move a perspectiva 3D e o ponto de luz especular conforme o mouse ou toque.
+ * @param {HTMLElement} cardElement
+ */
+export const attachReflectiveCardEffect = (cardElement) => {
+    if (!cardElement || prefersReducedMotion()) return;
+
+    let rafId = null;
+
+    const handlePointerMove = (event) => {
+        if (rafId) cancelAnimationFrame(rafId);
+
+        rafId = requestAnimationFrame(() => {
+            const rect = cardElement.getBoundingClientRect();
+            if (!rect.width || !rect.height) return;
+
+            const clientX = event.clientX ?? rect.left + rect.width / 2;
+            const clientY = event.clientY ?? rect.top + rect.height / 2;
+
+            const relX = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+            const relY = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height));
+
+            // Inclinação suave de até ±9 graus
+            const rotateY = ((relX - 0.5) * 18).toFixed(2);
+            const rotateX = ((0.5 - relY) * 18).toFixed(2);
+
+            cardElement.style.transition = "transform 60ms linear";
+            cardElement.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            cardElement.style.setProperty("--glare-x", `${(relX * 100).toFixed(1)}%`);
+            cardElement.style.setProperty("--glare-y", `${(relY * 100).toFixed(1)}%`);
+            cardElement.style.setProperty("--glare-opacity", "1");
+        });
+    };
+
+    const handlePointerLeave = () => {
+        if (rafId) cancelAnimationFrame(rafId);
+        cardElement.style.transition = "transform 420ms cubic-bezier(0.16, 1, 0.3, 1)";
+        cardElement.style.transform = "perspective(900px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
+        cardElement.style.setProperty("--glare-opacity", "0");
+    };
+
+    cardElement.addEventListener("pointermove", handlePointerMove);
+    cardElement.addEventListener("pointerleave", handlePointerLeave);
+    cardElement.addEventListener("pointercancel", handlePointerLeave);
+};
+

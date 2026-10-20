@@ -6,8 +6,11 @@
 
 import { IDENTITY_OPTIONS, QUIZ_QUESTIONS, SKIN_TONE_OPTIONS } from "../config/quizData.js";
 import { validateProfileField } from "../state/quizStore.js";
-import { buildAvatarRescueQrData, formatAvatarDownloadFilename } from "../services/avatarService.js";
-import { animateInvalidShake } from "./motionController.js";
+import {
+    buildAvatarRescueQrData,
+    renderCollectibleAvatarCard
+} from "../services/avatarService.js";
+import { animateInvalidShake, attachReflectiveCardEffect } from "./motionController.js";
 
 /**
  * Formata um número de telefone brasileiro no padrão (DD) 99999-9999.
@@ -431,8 +434,15 @@ export const renderQuizResult = (resultContainer, { quizResult, avatar, profile,
     wrapper.innerHTML = `
         <div class="result-layout__sidebar">
             <div class="rpg-panel avatar-showcase" data-result-panel id="avatarCard">
-                <div class="avatar-showcase__frame" id="avatarFrame"></div>
-                <p class="avatar-showcase__nickname" id="avatarNicknameLabel"></p>
+                <div class="reflective-card" id="reflectiveCardContainer">
+                    <img
+                        class="reflective-card__img"
+                        id="collectibleCardImg"
+                        alt="Card Colecionável DevSide"
+                    >
+                    <div class="reflective-card__sheen" aria-hidden="true"></div>
+                    <div class="reflective-card__glare" aria-hidden="true"></div>
+                </div>
             </div>
 
             <div class="rpg-panel qr-rescue" data-result-panel id="qrRescuePanel">
@@ -444,13 +454,13 @@ export const renderQuizResult = (resultContainer, { quizResult, avatar, profile,
                     <img
                         class="qr-rescue__img"
                         id="qrRescueImg"
-                        alt="QR Code para resgatar seu Avatar no celular"
+                        alt="QR Code para resgatar seu Card Avatar no celular"
                         width="176"
                         height="176"
                     >
                 </div>
                 <p class="qr-rescue__caption">
-                    Aponte a câmera do seu celular para abrir seu Card RPG e salvar seu Avatar na galeria.
+                    Aponte a câmera do seu celular para abrir seu Card Colecionável e salvar na galeria.
                 </p>
             </div>
 
@@ -494,14 +504,8 @@ export const renderQuizResult = (resultContainer, { quizResult, avatar, profile,
     fragment.appendChild(wrapper);
     resultContainer.replaceChildren(fragment);
 
-    // Segurança (XSS Prevention): atribui o apelido inserido pelo usuário via textContent
-    const nicknameLabel = resultContainer.querySelector("#avatarNicknameLabel");
-    if (nicknameLabel) {
-        nicknameLabel.textContent = playerName;
-    }
-
-    // Configura a imagem do avatar e o QR Code de resgate mobile
-    const avatarFrame = resultContainer.querySelector("#avatarFrame");
+    const reflectiveCard = resultContainer.querySelector("#reflectiveCardContainer");
+    const cardImg = resultContainer.querySelector("#collectibleCardImg");
     const qrRescuePanel = resultContainer.querySelector("#qrRescuePanel");
     const qrRescueImg = resultContainer.querySelector("#qrRescueImg");
     const restartBtn = resultContainer.querySelector("#btnRestartQuiz");
@@ -510,41 +514,26 @@ export const renderQuizResult = (resultContainer, { quizResult, avatar, profile,
         restartBtn.addEventListener("click", onRestart);
     }
 
-    if (!avatar || !avatarFrame) {
+    if (!avatar || !reflectiveCard || !cardImg) {
         if (qrRescuePanel) qrRescuePanel.hidden = true;
         return;
     }
+
+    attachReflectiveCardEffect(reflectiveCard);
 
     const { qrCodeImageUrl } = buildAvatarRescueQrData(avatar, playerName);
     if (qrRescueImg) {
         qrRescueImg.src = qrCodeImageUrl;
     }
 
-    const imgEl = document.createElement("img");
-    imgEl.className = "avatar-showcase__img";
-    imgEl.src = avatar.imagePath;
-    imgEl.alt = `Avatar DevSide da classe ${avatar.areaName}`;
-    let triedFallback = false;
-
-    imgEl.addEventListener("load", () => {
-        imgEl.classList.add("avatar-showcase__img--loaded");
-    });
-
-    imgEl.addEventListener("error", () => {
-        if (!triedFallback && avatar.fallbackImagePath && avatar.fallbackImagePath !== imgEl.src) {
-            triedFallback = true;
-            avatar.imagePath = avatar.fallbackImagePath;
-            imgEl.src = avatar.fallbackImagePath;
-            return;
-        }
-        const fallbackHint = document.createElement("p");
-        fallbackHint.className = "field__hint";
-        fallbackHint.textContent = `Sprite não encontrado (${avatar.imagePath})`;
-        avatarFrame.replaceChildren(fallbackHint);
-        if (qrRescuePanel) qrRescuePanel.hidden = true;
-    });
-
-    avatarFrame.appendChild(imgEl);
+    renderCollectibleAvatarCard({ avatar, nickname: playerName })
+        .then(({ dataUrl }) => {
+            cardImg.src = dataUrl;
+            cardImg.alt = `Card DevSide Seja Fatec de ${playerName} — ${avatar.areaName}`;
+        })
+        .catch(() => {
+            cardImg.src = avatar.imagePath;
+        });
 };
 
 /**

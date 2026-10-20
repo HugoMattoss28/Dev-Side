@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Resgate seu Avatar RPG do DevSide diretamente no seu celular.">
-    <title>DevSide — Resgatar Meu Avatar</title>
+    <meta name="description" content="Resgate seu Card Colecionável DevSide — Seja Fatec diretamente no seu celular.">
+    <title>DevSide — Meu Card Seja Fatec</title>
 
     <!-- Tipografia Space Grotesk -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,36 +20,36 @@
 </head>
 
 <body>
-    <main class="app-shell" style="max-width: 480px;">
+    <main class="app-shell" style="max-width: 460px;">
         <header class="hero-header">
             <div class="hero-header__badge">
-                <i class="bi bi-phone-fill" aria-hidden="true"></i>
-                <span>DevSide | Resgate Mobile</span>
+                <i class="bi bi-stars" aria-hidden="true"></i>
+                <span>DevSide | Seja Fatec</span>
             </div>
-            <h1 class="hero-header__title" style="font-size: clamp(1.75rem, 6vw, 2.3rem);">
-                Seu Avatar DevSide
+            <h1 class="hero-header__title" style="font-size: clamp(1.75rem, 6vw, 2.25rem);">
+                Seu Card Colecionável
             </h1>
             <p class="hero-header__subtitle" id="rescueClassSubtitle">
-                Carregando seu personagem...
+                Gerando seu card exclusivo...
             </p>
             <div class="hero-header__divider" aria-hidden="true"></div>
         </header>
 
         <section class="rpg-panel avatar-showcase" id="rescueCard">
-            <div class="winner-banner__icon-badge" id="rescueClassIconBadge" aria-hidden="true" style="width: 54px; height: 54px; font-size: 1.5rem; margin-bottom: var(--space-2);">
-                <i class="bi bi-code-slash" id="rescueClassIcon"></i>
+            <div class="reflective-card" id="rescueReflectiveCard">
+                <img
+                    class="reflective-card__img"
+                    id="rescueCardImg"
+                    alt="Card Colecionável DevSide — Seja Fatec"
+                >
+                <div class="reflective-card__sheen" aria-hidden="true"></div>
+                <div class="reflective-card__glare" aria-hidden="true"></div>
             </div>
 
-            <p class="winner-banner__eyebrow" id="rescueClassName">CLASSE DEVSIDE</p>
-
-            <div class="avatar-showcase__frame" id="rescueAvatarFrame" style="min-height: 280px; margin-top: var(--space-2);"></div>
-
-            <p class="avatar-showcase__nickname" id="rescueNickname"></p>
-
             <div style="display: flex; flex-direction: column; gap: var(--space-3); margin-top: var(--space-6);">
-                <button type="button" class="btn-action" id="btnMobileDownload">
+                <button type="button" class="btn-action" id="btnMobileDownload" disabled>
                     <i class="bi bi-download" aria-hidden="true"></i>
-                    <span>Baixar Avatar no Celular</span>
+                    <span>Baixar Card no Celular</span>
                 </button>
 
                 <button type="button" class="btn-action btn-action--secondary" id="btnMobileShare" hidden>
@@ -59,16 +59,23 @@
             </div>
 
             <p class="field__hint" style="margin-top: var(--space-4);">
-                Dica: no iPhone (iOS), você também pode pressionar e segurar a imagem acima e tocar em <strong>"Salvar em Fotos"</strong>.
+                Dica: toque e arraste o dedo sobre o card para ver o efeito holográfico 3D! No iPhone, você também pode segurar o dedo no card e tocar em <strong>"Salvar em Fotos"</strong>.
             </p>
         </section>
     </main>
 
     <script type="module">
-        import { buildAvatarPathsFromParams, formatAvatarDownloadFilename } from "./js/services/avatarService.js";
-        import { animateResultReveal } from "./js/ui/motionController.js";
+        import {
+            buildAvatarPathsFromParams,
+            renderCollectibleAvatarCard,
+            formatAvatarDownloadFilename
+        } from "./js/services/avatarService.js";
+        import {
+            animateResultReveal,
+            attachReflectiveCardEffect
+        } from "./js/ui/motionController.js";
 
-        document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", async () => {
             const params = new URLSearchParams(window.location.search);
 
             const areaKey = params.get("a") || "";
@@ -76,78 +83,61 @@
             const skinFolder = params.get("s") || "";
             const spriteNumber = Number(params.get("n") || 0);
 
-            // Sanitização estrita do nickname (Prevenção contra XSS via textContent)
+            // Sanitização estrita do apelido (Prevenção contra XSS)
             const rawNick = params.get("nick") || "Aventureiro";
-            const safeNickname = rawNick.trim().replace(/[<>"]/g, "").slice(0, 32) || "Aventureiro";
+            const safeNickname = rawNick.trim().replace(/[<>"]/g, "").slice(0, 24) || "Aventureiro";
 
-            const nicknameEl = document.getElementById("rescueNickname");
-            const classNameEl = document.getElementById("rescueClassName");
             const subtitleEl = document.getElementById("rescueClassSubtitle");
-            const classIconEl = document.getElementById("rescueClassIcon");
-            const avatarFrame = document.getElementById("rescueAvatarFrame");
+            const reflectiveCard = document.getElementById("rescueReflectiveCard");
+            const cardImg = document.getElementById("rescueCardImg");
             const downloadBtn = document.getElementById("btnMobileDownload");
             const shareBtn = document.getElementById("btnMobileShare");
             const rescueCard = document.getElementById("rescueCard");
 
-            if (nicknameEl) {
-                nicknameEl.textContent = safeNickname;
-            }
-
             const avatar = buildAvatarPathsFromParams(areaKey, genderFolder, skinFolder, spriteNumber);
 
-            if (!avatar || !avatarFrame) {
-                if (subtitleEl) subtitleEl.textContent = "Link de avatar inválido ou incompleto.";
-                if (downloadBtn) downloadBtn.disabled = true;
+            if (!avatar || !reflectiveCard || !cardImg) {
+                if (subtitleEl) subtitleEl.textContent = "Link de card inválido ou incompleto.";
                 return;
             }
 
-            if (classNameEl) {
-                classNameEl.textContent = `Classe: ${avatar.areaName}`;
-            }
             if (subtitleEl) {
-                subtitleEl.textContent = `Parabéns! Você desbloqueou a classe ${avatar.areaName}.`;
-            }
-            if (classIconEl) {
-                classIconEl.className = `bi ${avatar.iconClass}`;
+                subtitleEl.textContent = `Parabéns, ${safeNickname}! Você desbloqueou a classe ${avatar.areaName}.`;
             }
 
-            const imgEl = document.createElement("img");
-            imgEl.className = "avatar-showcase__img";
-            imgEl.src = avatar.imagePath;
-            imgEl.alt = `Avatar DevSide — ${avatar.areaName}`;
-            let triedFallback = false;
-
-            imgEl.addEventListener("load", () => {
-                imgEl.classList.add("avatar-showcase__img--loaded");
-            });
-
-            imgEl.addEventListener("error", () => {
-                if (!triedFallback && avatar.fallbackImagePath && avatar.fallbackImagePath !== imgEl.src) {
-                    triedFallback = true;
-                    avatar.imagePath = avatar.fallbackImagePath;
-                    imgEl.src = avatar.fallbackImagePath;
-                    return;
-                }
-                const errorMsg = document.createElement("p");
-                errorMsg.className = "field__hint";
-                errorMsg.textContent = "Não foi possível carregar a imagem do avatar.";
-                avatarFrame.replaceChildren(errorMsg);
-                if (downloadBtn) downloadBtn.disabled = true;
-            });
-
-            avatarFrame.appendChild(imgEl);
+            attachReflectiveCardEffect(reflectiveCard);
             animateResultReveal(rescueCard);
 
+            let generatedBlob = null;
+            let generatedDataUrl = "";
             const filename = formatAvatarDownloadFilename(safeNickname, avatar.areaName);
 
-            // Download direto via Blob para funcionar perfeitamente em navegadores mobile
-            downloadBtn?.addEventListener("click", async () => {
-                downloadBtn.disabled = true;
-                try {
-                    const response = await fetch(avatar.imagePath);
-                    const blob = await response.blob();
-                    const blobUrl = URL.createObjectURL(blob);
+            try {
+                const { dataUrl, blob } = await renderCollectibleAvatarCard({
+                    avatar,
+                    nickname: safeNickname
+                });
 
+                generatedDataUrl = dataUrl;
+                generatedBlob = blob;
+
+                cardImg.src = dataUrl;
+                cardImg.alt = `Card Seja Fatec de ${safeNickname} — Classe ${avatar.areaName}`;
+
+                if (downloadBtn) {
+                    downloadBtn.disabled = false;
+                }
+            } catch {
+                if (subtitleEl) {
+                    subtitleEl.textContent = "Não foi possível renderizar a imagem do seu card.";
+                }
+                return;
+            }
+
+            // Download direto da imagem composta (Card + Avatar + Apelido + Seja Fatec)
+            downloadBtn?.addEventListener("click", () => {
+                if (generatedBlob) {
+                    const blobUrl = URL.createObjectURL(generatedBlob);
                     const link = document.createElement("a");
                     link.href = blobUrl;
                     link.download = filename;
@@ -155,40 +145,38 @@
                     link.click();
                     link.remove();
                     setTimeout(() => URL.revokeObjectURL(blobUrl), 3000);
-                } catch {
-                    // Fallback direto caso o fetch de blob falhe
+                    return;
+                }
+
+                if (generatedDataUrl) {
                     const link = document.createElement("a");
-                    link.href = avatar.imagePath;
+                    link.href = generatedDataUrl;
                     link.download = filename;
                     document.body.appendChild(link);
                     link.click();
                     link.remove();
-                } finally {
-                    downloadBtn.disabled = false;
                 }
             });
 
-            // Ativa o botão de Compartilhamento Nativo (WhatsApp / Instagram) se o celular suportar Web Share API
-            if (typeof navigator.share === "function" && shareBtn) {
+            // Compartilhamento nativo da imagem composta via Web Share API (WhatsApp / Stories)
+            if (typeof navigator.share === "function" && shareBtn && generatedBlob) {
                 shareBtn.hidden = false;
                 shareBtn.addEventListener("click", async () => {
                     try {
-                        const response = await fetch(avatar.imagePath);
-                        const blob = await response.blob();
-                        const file = new File([blob], filename, { type: "image/png" });
+                        const file = new File([generatedBlob], filename, { type: "image/png" });
 
                         if (navigator.canShare && navigator.canShare({ files: [file] })) {
                             await navigator.share({
-                                title: `Meu Avatar DevSide — ${avatar.areaName}`,
-                                text: `Descobri meu lado da tecnologia no DevSide: ${avatar.areaName}!`,
+                                title: `Meu Card DevSide — Seja Fatec (${avatar.areaName})`,
+                                text: `Eu fui no Seja Fatec e descobri minha classe no DevSide: ${avatar.areaName}!`,
                                 files: [file]
                             });
                             return;
                         }
 
                         await navigator.share({
-                            title: `Meu Avatar DevSide — ${avatar.areaName}`,
-                            text: `Descobri meu lado da tecnologia no DevSide: ${avatar.areaName}!`,
+                            title: `Meu Card DevSide — Seja Fatec (${avatar.areaName})`,
+                            text: `Eu fui no Seja Fatec e descobri minha classe no DevSide: ${avatar.areaName}!`,
                             url: window.location.href
                         });
                     } catch {
@@ -201,4 +189,3 @@
 </body>
 
 </html>
-
