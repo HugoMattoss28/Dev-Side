@@ -1,0 +1,47 @@
+/* ==========================================================================
+   DEVSIDE — MOTION & ANIMATIONS (60FPS GPU-ACCELERATED)
+   Exclusivamente transform e opacity + Respeito a prefers-reduced-motion
+   ========================================================================== */
+
+@keyframes floatAvatarIdle {
+    0%, 100% {
+        transform: translate3d(0, 0, 0);
+    }
+    50% {
+        transform: translate3d(0, -8px, 0);
+    }
+}
+
+@keyframes pulseBadgeGlow {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.88;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .avatar-showcase__img--loaded {
+        animation: floatAvatarIdle 4.2s var(--ease-in-out-cubic) infinite;
+    }
+
+    .winner-banner__icon-badge {
+        animation: pulseBadgeGlow 3s var(--ease-in-out-cubic) infinite;
+    }
+}
+
+/* Respeito estrito à preferência de acessibilidade do sistema */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+

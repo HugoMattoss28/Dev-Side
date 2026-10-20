@@ -1,0 +1,1 @@
+python cortar_sprites.py "sprites\seguranca (1).png"

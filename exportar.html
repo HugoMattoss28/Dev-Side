@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevSide — Exportar Contatos</title>
+
+    <!-- Tipografia Space Grotesk -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Arquitetura CSS Modular do DevSide -->
+    <link rel="stylesheet" href="./css/main.css">
+</head>
+
+<body>
+    <main class="app-shell">
+        <header class="hero-header">
+            <div class="hero-header__badge">
+                <i class="bi bi-database-down" aria-hidden="true"></i>
+                <span>DevSide | Administração</span>
+            </div>
+            <h1 class="hero-header__title">Exportar Contatos</h1>
+            <p class="hero-header__subtitle" id="totalContatos">
+                Carregando registros salvos...
+            </p>
+            <div class="hero-header__divider" aria-hidden="true"></div>
+        </header>
+
+        <section class="quiz-card" style="max-width: 520px; margin-inline: auto; text-align: center;">
+            <p class="winner-banner__desc" style="margin-bottom: var(--space-6);">
+                Exporte a lista de aventureiros registrada localmente neste navegador em formato JSON estruturado.
+            </p>
+
+            <button type="button" class="btn-action" id="btnBaixarContatos">
+                <i class="bi bi-file-earmark-arrow-down-fill" aria-hidden="true"></i>
+                <span>Baixar Contatos (.txt)</span>
+            </button>
+        </section>
+    </main>
+
+    <script type="module">
+        import { getSavedContacts } from "./js/services/storageService.js";
+        import { animateInvalidShake } from "./js/ui/motionController.js";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const totalEl = document.getElementById("totalContatos");
+            const downloadBtn = document.getElementById("btnBaixarContatos");
+            const contacts = getSavedContacts();
+
+            if (totalEl) {
+                totalEl.textContent = `${contacts.length} contato(s) salvo(s) neste navegador`;
+            }
+
+            if (downloadBtn) {
+                if (contacts.length === 0) {
+                    downloadBtn.disabled = true;
+                }
+
+                downloadBtn.addEventListener("click", () => {
+                    const currentContacts = getSavedContacts();
+                    if (currentContacts.length === 0) {
+                        animateInvalidShake(downloadBtn);
+                        return;
+                    }
+
+                    const content = JSON.stringify(currentContacts, null, 2);
+                    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+                    const url = URL.createObjectURL(blob);
+
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.download = "contatos-devside.txt";
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    URL.revokeObjectURL(url);
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

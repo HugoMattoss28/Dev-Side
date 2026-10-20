@@ -1,0 +1,89 @@
+Informações Pessoais[cite: 1]
+
+01. Qual é o seu nome ou apelido?[cite: 1]
+- Campo de texto livre (Digite seu nome ou apelido)[cite: 1]
+
+02. Quantos anos você tem?[cite: 1]
+- Campo numérico livre (Digite sua idade)[cite: 1]
+
+03. Qual seu gênero?[cite: 1]
+- Masculino[cite: 1]
+- Feminino[cite: 1]
+- Não-binário[cite: 1]
+- Gênero fluido[cite: 1]
+- Agênero[cite: 1]
+- Outro[cite: 1]
+- Prefiro não informar[cite: 1]
+
+Personalidade[cite: 1]
+
+01. Você é uma pessoa extrovertida ou introvertida?[cite: 1]
+- Extrovertido[cite: 1]
+- Introvertido[cite: 1]
+
+02. Qual dessas opções mais combina com os seus gostos?[cite: 1]
+- 🤓 Cultura Geek[cite: 1]
+- 🎬 Cultura Pop[cite: 1]
+- 🎮 Games[cite: 1]
+- 💻 Tecnologia[cite: 1]
+- 🎨 Design e Arte[cite: 1]
+- 🎵 Música[cite: 1]
+
+03. Você se considera uma pessoa criativa? Exemplo: gosta de desenhar, criar histórias ou inventar coisas.[cite: 1]
+- Sim[cite: 1]
+- Não[cite: 1]
+
+04. Você já ficou curioso(a) sobre como um site, game ou aplicativo funciona por dentro?[cite: 1]
+- Sim[cite: 1]
+- Não[cite: 1]
+
+05. Você já ficou curioso(a) sobre como a internet conecta pessoas e permite que você acesse sites e aplicativos de qualquer lugar?[cite: 1]
+- Sim[cite: 1]
+- Não[cite: 1]
+
+06. Quando aparece um problema, como você costuma agir?[cite: 1]
+- 🔎 Pesquiso até encontrar uma solução[cite: 1]
+- 🧪 Vou testando possibilidades[cite: 1]
+- 🤝 Peço ajuda para alguém[cite: 1]
+- 🧠 Penso bastante antes de tentar[cite: 1]
+
+07. Quando você tem liberdade para criar algo, o que mais te atrai?[cite: 1]
+- 🎨 Criar algo bonito e visual[cite: 1]
+- ⚙️ Fazer algo funcionar[cite: 1]
+- 💡 Criar algo diferente[cite: 1]
+- 🛠️ Criar algo útil para outras pessoas[cite: 1]
+
+08. Como você prefere trabalhar?[cite: 1]
+- 👥 Com outras pessoas[cite: 1]
+- 🧑‍💻 Sozinho[cite: 1]
+- 🔄 Depende da situação[cite: 1]
+
+09. Qual dessas áreas mais desperta sua curiosidade?[cite: 1]
+- 💻 Programação[cite: 1]
+- 🎨 Design e interfaces[cite: 1]
+- 🌐 Redes e internet[cite: 1]
+- 📊 Dados e informações[cite: 1]
+- 🔐 Segurança[cite: 1]
+- 🤔 Ainda não sei[cite: 1]
+
+10. Se você pudesse criar qualquer coisa com tecnologia, o que faria?[cite: 1]
+- 📱 Um aplicativo[cite: 1]
+- 🌐 Um site[cite: 1]
+- 🎮 Um jogo[cite: 1]
+- ⚙️ Um sistema para resolver um problema[cite: 1]
+- 🌎 Uma tecnologia para conectar pessoas[cite: 1]
+- 💭 Ainda não faço ideia[cite: 1]
+
+11. O que mais te motiva quando aprende algo novo?[cite: 1]
+- 🔎 Descobrir como as coisas funcionam[cite: 1]
+- 💰 Ter melhores oportunidades de trabalho[cite: 1]
+- 🎨 Poder criar algo meu[cite: 1]
+- 🧩 Resolver desafios[cite: 1]
+- 🤝 Ajudar outras pessoas[cite: 1]
+- 🚀 Pensar no meu futuro[cite: 1]
+___________________________________________________________//_____________________________________
+💻 Programação — criar sistemas, sites e jogos.
+🎨 Design — criar a aparência e a experiência das interfaces.
+🌐 Redes e Internet — conectar computadores, celulares e sistemas.
+🔐 Cibersegurança — proteger sistemas e informações.
+🛠️ Tecnologia e Suporte — configurar, resolver problemas e ajudar pessoas com tecnologia.

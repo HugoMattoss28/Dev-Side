@@ -1,0 +1,975 @@
+:root {
+    --bg-deep: #090c16;
+    --bg-nebula-1: #1a1140;
+    --bg-nebula-2: #0d1730;
+    --panel: #141b30;
+    --panel-dark: #0f1526;
+    --panel-line: #2a3457;
+    --ink: #eef0fb;
+    --ink-dim: #9aa3c4;
+    --ink-muted: #626b8f;
+    --gold: #e8b94b;
+    --gold-light: #ffd66b;
+    --gold-dim: #7a6431;
+    --purple: #7c4dff;
+    --purple-light: #a98cff;
+    --purple-dark: #6335d6;
+    --shadow: rgba(0,0,0,.45);
+}
+
+/* =========================================================
+   RESET / BASE
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    color: var(--ink);
+    font-family:
+        'Space Grotesk',
+        'Segoe UI',
+        Arial,
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+
+    background:
+        radial-gradient(
+            ellipse 80% 50% at 15% 0%,
+            var(--bg-nebula-1) 0%,
+            transparent 60%
+        ),
+        radial-gradient(
+            ellipse 70% 60% at 100% 30%,
+            var(--bg-nebula-2) 0%,
+            transparent 55%
+        ),
+        var(--bg-deep);
+}
+
+/* =========================================================
+   CONTAINER BOOTSTRAP
+   ========================================================= */
+
+main.container {
+    max-width: 900px;
+    position: relative;
+}
+
+/* =========================================================
+   TÍTULO PRINCIPAL
+   ========================================================= */
+
+main > .text-center:first-child {
+    position: relative;
+    padding: 30px 10px 35px;
+}
+
+main > .text-center:first-child::before {
+    content: "DevSide | Seu lado DEV";
+    display: block;
+    margin-bottom: 18px;
+    color: var(--gold);
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+}
+
+main > .text-center:first-child::after {
+    content: "";
+    display: block;
+    width: 120px;
+    height: 2px;
+    margin: 25px auto 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            var(--gold),
+            transparent
+        );
+
+    box-shadow:
+        0 0 12px rgba(232,185,75,.4);
+}
+
+/* =========================================================
+   H1
+   ========================================================= */
+
+h1 {
+    margin: 0 0 18px;
+    color: var(--ink);
+    font-size: clamp(2.1rem, 5vw, 3.2rem);
+    line-height: 1.05;
+    font-weight: 750;
+    letter-spacing: -.03em;
+
+    text-shadow:
+        0 0 20px rgba(124,77,255,.18),
+        0 0 30px rgba(232,185,75,.08);
+}
+
+/* =========================================================
+   TEXTO INTRODUTÓRIO
+   ========================================================= */
+
+main > .text-center:first-child .lead {
+    max-width: 650px;
+    margin: 0 auto;
+    color: var(--ink-dim);
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+/* =========================================================
+   CARDS PRINCIPAIS
+   ========================================================= */
+
+.card {
+    position: relative;
+    margin-bottom: 28px !important;
+    color: var(--ink);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(20,27,48,.98),
+            rgba(15,21,38,.98)
+        );
+
+    border: 1px solid var(--panel-line);
+    border-radius: 5px;
+
+    box-shadow:
+        0 18px 45px rgba(0,0,0,.25),
+        inset 0 1px 0 rgba(255,255,255,.025);
+
+    overflow: hidden;
+}
+
+.card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 150px;
+    height: 2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--gold),
+            transparent
+        );
+
+    box-shadow:
+        0 0 12px rgba(232,185,75,.35);
+}
+
+.card::after {
+    content: "";
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    width: 6px;
+    height: 6px;
+
+    background: var(--gold);
+    opacity: .55;
+
+    box-shadow:
+        0 0 10px rgba(232,185,75,.55);
+}
+
+/* =========================================================
+   CARD BODY
+   ========================================================= */
+
+.card-body {
+    padding: 30px;
+}
+
+/* =========================================================
+   TÍTULOS DOS CARDS
+   ========================================================= */
+
+.card-title {
+    margin: 0 0 28px !important;
+    color: var(--ink);
+    font-size: 1.45rem;
+    font-weight: 700;
+    letter-spacing: -.01em;
+}
+
+.card-title::before {
+    content: "// ";
+    color: var(--gold);
+}
+
+/* =========================================================
+   LABELS
+   ========================================================= */
+
+.form-label {
+    display: block;
+    margin-bottom: 11px;
+    color: var(--ink);
+    font-size: .94rem;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   CAMPOS DE TEXTO
+   ========================================================= */
+
+.form-control,
+.form-select {
+    min-height: 50px;
+    color: var(--ink) !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            #11172a,
+            #0d1221
+        ) !important;
+
+    border: 1px solid var(--panel-line) !important;
+    border-radius: 4px;
+    box-shadow: none !important;
+
+    transition:
+        border-color .2s ease,
+        background .2s ease,
+        box-shadow .2s ease,
+        transform .2s ease;
+}
+
+.form-control::placeholder {
+    color: #626b8f;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--gold) !important;
+    background: #101629 !important;
+
+    box-shadow:
+        0 0 0 3px rgba(232,185,75,.08),
+        0 0 18px rgba(232,185,75,.08) !important;
+
+    outline: none;
+}
+
+.form-select {
+    cursor: pointer;
+}
+
+/* =========================================================
+   ÁREA DE INFORMAÇÕES PESSOAIS
+   ========================================================= */
+
+#pessoais .row {
+    row-gap: 20px;
+}
+
+/* =========================================================
+   CUSTOMIZAÇÃO DE GÊNERO / IDENTIDADE (SÍMBOLOS)
+   ========================================================= */
+
+.btn-genero-masculino,
+.btn-genero-feminino,
+.btn-genero-trans {
+    border: 2px solid var(--panel-line);
+    background: linear-gradient(145deg, #151b30, #101527);
+    color: var(--ink-dim);
+    transition: all 0.2s ease-in-out;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* =====================================================
+   ÍCONES DE GÊNERO
+   ===================================================== */
+
+.icone-genero {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+.btn-genero-masculino:hover,
+.btn-genero-feminino:hover,
+.btn-genero-trans:hover {
+    transform: translateY(-2px);
+    border-color: var(--gold);
+    box-shadow: 0 8px 22px rgba(0,0,0,.25);
+    color: var(--ink);
+}
+
+.btn-genero-masculino {
+    border-color: #0353a4;
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+    color: #38bdf8;
+}
+input[type="radio"]#generoMasculino:checked + .btn-genero-masculino {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+    color: #fff !important;
+    border: 3px solid #38bdf8 !important;
+    box-shadow: 0 0 18px rgba(56, 189, 248, 0.6);
+}
+
+.btn-genero-feminino {
+    border-color: #9d174d;
+    background: linear-gradient(135deg, #0f172a 0%, #831843 100%);
+    color: #f472b6;
+}
+input[type="radio"]#generoFeminino:checked + .btn-genero-feminino {
+    background: linear-gradient(135deg, #db2777 0%, #be185d 100%) !important;
+    color: #fff !important;
+    border: 3px solid #f472b6 !important;
+    box-shadow: 0 0 18px rgba(244, 114, 182, 0.6);
+}
+
+.btn-genero-trans {
+    border-color: #581c87;
+    background: linear-gradient(135deg, #0f172a 0%, #581c87 100%);
+    color: #c084fc;
+}
+input[type="radio"]#generoTrans:checked + .btn-genero-trans {
+    background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%) !important;
+    color: #fff !important;
+    border: 3px solid #c084fc !important;
+    box-shadow: 0 0 18px rgba(192, 132, 252, 0.6);
+}
+
+/* =========================================================
+   SELEÇÃO DE TOM DE PELE
+   ========================================================= */
+
+.tom-pele-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 0;
+}
+
+.tom-pele-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    gap: 8px;
+    transition: transform 0.2s ease;
+}
+
+.tom-pele-card input[type="radio"] {
+    display: none;
+}
+
+.tom-pele-box {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    border: 2px solid var(--panel-line);
+    background-size: cover;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+}
+
+.skin-clara {
+    background: linear-gradient(135deg, #ffd3b6 0%, #f1c7a5 100%);
+}
+
+.skin-escura {
+    background: linear-gradient(135deg, #8d5b42 0%, #523121 100%);
+}
+
+.tom-pele-brilho {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.tom-pele-nome {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink-dim);
+    transition: color 0.2s ease;
+}
+
+.tom-pele-card:hover {
+    transform: translateY(-3px);
+}
+
+.tom-pele-card:hover .tom-pele-box {
+    border-color: var(--gold-light);
+    box-shadow: 0 6px 20px rgba(232, 185, 75, 0.25);
+}
+
+.tom-pele-card:hover .tom-pele-nome {
+    color: var(--ink);
+}
+
+.tom-pele-card input[type="radio"]:checked + .tom-pele-box {
+    border: 3px solid var(--gold) !important;
+    transform: scale(1.12);
+    box-shadow: 
+        0 0 20px rgba(232, 185, 75, 0.6),
+        inset 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+.tom-pele-card input[type="radio"]:checked ~ .tom-pele-nome {
+    color: var(--gold-light);
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(232, 185, 75, 0.4);
+}
+
+/* =========================================================
+   PERGUNTAS E ALTERNATIVAS
+   ========================================================= */
+
+#personalidade > .card-body > div[id^="q"] {
+    position: relative;
+    padding: 24px 0 26px;
+    border-bottom: 1px solid rgba(42,52,87,.65);
+}
+
+#personalidade > .card-body > div[id^="q"]:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+#personalidade > .card-body > div[id^="q"] > .form-label {
+    margin-bottom: 17px;
+    font-size: 1rem;
+    line-height: 1.55;
+}
+
+#personalidade .row {
+    --bs-gutter-x: 14px;
+    --bs-gutter-y: 14px;
+    margin-top: 0;
+}
+
+#personalidade .row > [class*="col-"] {
+    display: flex;
+}
+
+.form-check {
+    position: relative;
+    width: 100%;
+    min-height: 68px;
+
+    display: flex;
+    align-items: center;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    color: var(--ink-dim);
+
+    background:
+        linear-gradient(
+            145deg,
+            #151b30,
+            #101527
+        );
+
+    border: 1px solid var(--panel-line);
+    border-radius: 4px;
+
+    cursor: pointer;
+    overflow: hidden;
+
+    transition:
+        border-color .18s ease,
+        background .18s ease,
+        transform .18s ease,
+        box-shadow .18s ease;
+}
+
+.form-check::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 2px;
+    background: transparent;
+    transition: background .18s ease, box-shadow .18s ease;
+}
+
+.form-check:hover {
+    color: var(--ink);
+    background:
+        linear-gradient(
+            145deg,
+            #1b223b,
+            #141a30
+        );
+    border-color: rgba(232,185,75,.65);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(0,0,0,.25), 0 0 15px rgba(232,185,75,.05);
+}
+
+.form-check:hover::before {
+    background: var(--gold);
+    box-shadow: 0 0 10px rgba(232,185,75,.5);
+}
+
+.form-check-input {
+    position: relative;
+    flex: none;
+    width: 20px !important;
+    height: 20px !important;
+    margin: 0 13px 0 16px !important;
+    background-color: #0d1323 !important;
+    border: 1px solid #465170 !important;
+    box-shadow: none !important;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.form-check-input[type="radio"] {
+    border-radius: 50%;
+}
+
+.form-check-input[type="checkbox"] {
+    border-radius: 3px;
+}
+
+.form-check-input:checked {
+    background-color: var(--gold) !important;
+    border-color: var(--gold) !important;
+    box-shadow: 0 0 10px rgba(232,185,75,.22) !important;
+}
+
+.form-check:has(.form-check-input:checked) {
+    color: #fff;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(75, 10, 255, 0.18),
+            rgba(20,27,48,1)
+        );
+    border: 2px solid var(--gold);
+    box-shadow:
+        inset 0 0 25px rgba(232,185,75,.045),
+        0 0 18px rgba(232,185,75,.08);
+}
+
+.form-check-label {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    min-height: 68px;
+    padding: 13px 15px 13px 0;
+    color: inherit;
+    font-size: .91rem;
+    font-weight: 500;
+    line-height: 1.45;
+    cursor: pointer;
+    z-index: 2;
+}
+
+/* =========================================================
+   BOTÕES GERAIS
+   ========================================================= */
+
+.btn {
+    position: relative;
+    min-height: 50px;
+    padding: 13px 26px !important;
+    color: #1a1206 !important;
+    font-size: .95rem !important;
+    font-weight: 700 !important;
+    background:
+        linear-gradient(
+            135deg,
+            var(--gold-light),
+            var(--gold)
+        ) !important;
+    border: 1px solid var(--gold) !important;
+    border-radius: 4px !important;
+    box-shadow: 0 5px 18px rgba(0,0,0,.2);
+    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+
+.btn:hover {
+    color: #1a1206 !important;
+    transform: translateY(-2px);
+    filter: brightness(1.07);
+    box-shadow: 0 8px 25px rgba(232,185,75,.25);
+}
+
+.btn:active {
+    transform: translateY(0) !important;
+}
+
+/* =========================================================
+   NAVEGAÇÃO DO QUIZ (SETAS)
+   ========================================================= */
+
+.quiz-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 35px;
+    width: 100%;
+}
+
+.quiz-arrow {
+    position: relative;
+    width: 85px;
+    height: 48px;
+    border: 1px solid var(--panel-line);
+    background: var(--panel-dark);
+    color: var(--gold);
+    font-size: 25px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.quiz-next {
+    clip-path: polygon(0 0, 78% 0, 100% 50%, 78% 100%, 0 100%, 18% 50%);
+    padding-left: 8px;
+}
+
+.quiz-back {
+    clip-path: polygon(22% 0, 100% 0, 82% 50%, 100% 100%, 22% 100%, 0 50%);
+    padding-right: 8px;
+}
+
+.quiz-arrow:not(:disabled):hover {
+    background: #1d2640;
+    color: var(--gold-light);
+    border-color: var(--gold);
+    transform: translateY(-3px);
+}
+
+.quiz-arrow:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+    filter: grayscale(0.5);
+}
+
+
+.btn-resultado {
+    width: 20%;
+    padding: 14px 45px 14px 25px;
+
+    border: 2px solid #e8b94b;
+
+    background: linear-gradient(
+        100deg,
+        #1d2640,
+        #040a20
+    );
+
+    color: #ffd66b;
+
+    font-size: 1rem;
+    font-weight: bold;
+
+    cursor: pointer;
+    position: relative;
+
+    clip-path: polygon(
+        0 0,
+        88% 0,
+        100% 50%,
+        88% 100%,
+        0 100%,
+        8% 50%
+    );
+
+    transition: all 0.2s ease;
+}
+
+.btn-resultado:hover:not(:disabled) {
+    transform: translateX(3px);
+    filter: brightness(1.08);
+}
+
+.btn-resultado:active:not(:disabled) {
+    transform: translateX(1px);
+}
+
+.btn-resultado:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* =========================================================
+   RESULTADO RPG — 2 COLUNAS E COMPONENTES
+   ========================================================= */
+
+#resultado {
+    margin-top: 35px;
+    color: var(--ink);
+}
+
+.resultado-container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 10px 0 50px;
+    display: flex;
+    gap: 25px;
+    align-items: flex-start;
+}
+
+.resultado-coluna-esquerda {
+    flex: 0.8 1 0;
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.resultado-coluna-direita {
+    flex: 1.2 1 0;
+    min-width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Card do Avatar */
+.avatar-card {
+    background: #111827;
+    border: 1px solid #374151;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.avatar-resultado {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.avatar-resultado img {
+    max-width: 100%;
+    max-height: 380px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.avatar-nome {
+    margin-top: 15px;
+    color: var(--ink);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+/* Botão Baixar Avatar */
+.btn-baixar-avatar {
+    width: 100%;
+    min-height: 50px;
+    padding: 13px 26px;
+    color: #1a1206;
+    font-size: .95rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    border: 1px solid var(--gold);
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 5px 18px rgba(0,0,0,.2);
+    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+
+.btn-baixar-avatar:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.07);
+    box-shadow: 0 8px 25px rgba(232,185,75,.25);
+}
+
+/* Card da Classe Principal */
+.classe-principal {
+    background: #111827;
+    border: 1px solid #374151;
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+}
+
+.classe-principal .icone img,
+.icone-classe img {
+    width: 48px !important;
+    height: 48px !important;
+    max-width: 48px !important;
+    max-height: 48px !important;
+    object-fit: contain;
+    display: inline-block;
+}
+
+.classe-principal .icone {
+    margin-bottom: 12px;
+}
+
+.classe-principal .titulo {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--ink-dim);
+    margin-bottom: 5px;
+}
+
+.classe-principal h3 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 5px 0;
+    color: var(--ink);
+}
+
+.classe-principal .pontos {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--purple-light);
+    margin-bottom: 15px;
+}
+
+.rpg-descricao {
+    font-size: 0.92rem;
+    color: var(--ink-dim);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Tabela RPG de Atributos */
+.tabela-rpg {
+    background: #111827;
+    border: 1px solid #374151;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.tabela-rpg-titulo {
+    padding: 15px 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    border-bottom: 1px solid #374151;
+    color: var(--gold);
+}
+
+.rpg-linha {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(55, 65, 81, 0.5);
+}
+
+.rpg-linha:last-child {
+    border-bottom: none;
+}
+
+.rpg-classe {
+    width: 160px;
+    min-width: 160px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.rpg-xp {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.barra-xp {
+    flex: 1;
+    height: 14px;
+    background: #1f2937;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.barra-xp-preenchida {
+    height: 100%;
+    background: linear-gradient(90deg, var(--purple) 0%, var(--purple-light) 100%);
+    border-radius: 999px;
+    transition: width 0.8s ease-in-out;
+}
+
+.rpg-pontos {
+    min-width: 45px;
+    text-align: right;
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: var(--ink);
+}
+
+/* =========================================================
+   RESPONSIVIDADE GERAL
+   ========================================================= */
+
+@media (max-width: 768px) {
+    .resultado-container {
+        flex-direction: column;
+    }
+    
+    .resultado-coluna-esquerda,
+    .resultado-coluna-direita {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 576px) {
+    main.container {
+        padding-left: 13px !important;
+        padding-right: 13px !important;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    #personalidade .row > [class*="col-"] {
+        width: 100%;
+    }
+}
+
+/* =========================================================
+   ACESSIBILIDADE
+   ========================================================= */
+
+:focus-visible {
+    outline: 2px solid var(--gold) !important;
+    outline-offset: 3px;
+}

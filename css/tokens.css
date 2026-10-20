@@ -1,0 +1,96 @@
+/* ==========================================================================
+   DEVSIDE — DESIGN TOKENS (:root)
+   Variáveis nativas para cores, tipografia, espaçamentos e curvas de animação
+   ========================================================================== */
+
+:root {
+    /* Paleta Cósmica / RPG Dark UI */
+    --color-bg-deep: #070a14;
+    --color-bg-nebula-purple: #1a1140;
+    --color-bg-nebula-blue: #0d1730;
+    --color-surface-primary: #141b30;
+    --color-surface-secondary: #0f1526;
+    --color-surface-elevated: #1b2440;
+    --color-surface-input: #0d1221;
+    --color-border-subtle: #2a3457;
+    --color-border-strong: #3d4b7a;
+
+    /* Tipografia e Contraste (WCAG AA/AAA) */
+    --color-text-primary: #eef0fb;
+    --color-text-secondary: #9aa3c4;
+    --color-text-muted: #647099;
+    --color-text-inverse: #140f04;
+
+    /* Cores de Destaque (Gold & Arcane Purple) */
+    --color-gold-base: #e8b94b;
+    --color-gold-light: #ffd66b;
+    --color-gold-dim: #7a6431;
+    --color-gold-glow: rgba(232, 185, 75, 0.35);
+
+    --color-purple-base: #7c4dff;
+    --color-purple-light: #a98cff;
+    --color-purple-dark: #5e35b1;
+    --color-purple-glow: rgba(124, 77, 255, 0.35);
+
+    /* Cores Semânticas e de Identidade */
+    --color-male-accent: #38bdf8;
+    --color-male-bg: rgba(2, 132, 199, 0.22);
+    --color-female-accent: #f472b6;
+    --color-female-bg: rgba(219, 39, 119, 0.22);
+    --color-trans-accent: #c084fc;
+    --color-trans-bg: rgba(124, 58, 237, 0.22);
+
+    --color-danger: #ff5252;
+    --color-danger-bg: rgba(255, 82, 82, 0.12);
+    --color-success: #34d399;
+    --color-success-bg: rgba(52, 211, 153, 0.12);
+
+    /* Cores por Classe RPG */
+    --color-class-programacao: #38bdf8;
+    --color-class-design: #f472b6;
+    --color-class-redes: #34d399;
+    --color-class-seguranca: #a98cff;
+
+    /* Tipografia */
+    --font-sans: 'Space Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.35rem;
+    --text-2xl: clamp(1.5rem, 3vw, 2rem);
+    --text-hero: clamp(2rem, 4.8vw, 3.1rem);
+
+    /* Espaçamentos (Escala 4px/8px) */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.25rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-10: 2.5rem;
+    --space-12: 3rem;
+
+    /* Bordas e Sombras */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-pill: 9999px;
+
+    --shadow-card: 0 20px 50px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    --shadow-elevated: 0 10px 26px rgba(0, 0, 0, 0.35);
+    --shadow-gold: 0 0 20px rgba(232, 185, 75, 0.32);
+
+    /* Curvas de Aceleração Físicas (60fps Motion Design) */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+    --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* Durações de Transição */
+    --duration-fast: 180ms;
+    --duration-normal: 320ms;
+    --duration-slow: 520ms;
+}
+
