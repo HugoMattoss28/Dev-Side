@@ -6,7 +6,7 @@
 
 import { IDENTITY_OPTIONS, QUIZ_QUESTIONS, SKIN_TONE_OPTIONS } from "../config/quizData.js";
 import { validateProfileField } from "../state/quizStore.js";
-import { formatAvatarDownloadFilename } from "../services/avatarService.js";
+import { buildAvatarRescueQrData, formatAvatarDownloadFilename } from "../services/avatarService.js";
 import { animateInvalidShake } from "./motionController.js";
 
 /**
@@ -432,18 +432,27 @@ export const renderQuizResult = (resultContainer, { quizResult, avatar, profile,
         <div class="result-layout__sidebar">
             <div class="rpg-panel avatar-showcase" data-result-panel id="avatarCard">
                 <div class="avatar-showcase__frame" id="avatarFrame"></div>
-                <p class="avatar-showcase__nickname">${escapeHtml(playerName)}</p>
+                <p class="avatar-showcase__nickname" id="avatarNicknameLabel"></p>
             </div>
 
-            <button
-                type="button"
-                class="btn-action"
-                id="btnDownloadAvatar"
-                data-result-panel
-            >
-                <i class="bi bi-download" aria-hidden="true"></i>
-                <span>Baixar minha imagem</span>
-            </button>
+            <div class="rpg-panel qr-rescue" data-result-panel id="qrRescuePanel">
+                <div class="qr-rescue__header">
+                    <i class="bi bi-qr-code-scan" aria-hidden="true"></i>
+                    <span>Baixar pelo Celular</span>
+                </div>
+                <div class="qr-rescue__box">
+                    <img
+                        class="qr-rescue__img"
+                        id="qrRescueImg"
+                        alt="QR Code para resgatar seu Avatar no celular"
+                        width="176"
+                        height="176"
+                    >
+                </div>
+                <p class="qr-rescue__caption">
+                    Aponte a câmera do seu celular para abrir seu Card RPG e salvar seu Avatar na galeria.
+                </p>
+            </div>
 
             <button
                 type="button"
@@ -485,9 +494,16 @@ export const renderQuizResult = (resultContainer, { quizResult, avatar, profile,
     fragment.appendChild(wrapper);
     resultContainer.replaceChildren(fragment);
 
-    // Configura a imagem do avatar com fallback automático de capitalização
+    // Segurança (XSS Prevention): atribui o apelido inserido pelo usuário via textContent
+    const nicknameLabel = resultContainer.querySelector("#avatarNicknameLabel");
+    if (nicknameLabel) {
+        nicknameLabel.textContent = playerName;
+    }
+
+    // Configura a imagem do avatar e o QR Code de resgate mobile
     const avatarFrame = resultContainer.querySelector("#avatarFrame");
-    const downloadBtn = resultContainer.querySelector("#btnDownloadAvatar");
+    const qrRescuePanel = resultContainer.querySelector("#qrRescuePanel");
+    const qrRescueImg = resultContainer.querySelector("#qrRescueImg");
     const restartBtn = resultContainer.querySelector("#btnRestartQuiz");
 
     if (restartBtn && typeof onRestart === "function") {
@@ -495,8 +511,13 @@ export const renderQuizResult = (resultContainer, { quizResult, avatar, profile,
     }
 
     if (!avatar || !avatarFrame) {
-        if (downloadBtn) downloadBtn.disabled = true;
+        if (qrRescuePanel) qrRescuePanel.hidden = true;
         return;
+    }
+
+    const { qrCodeImageUrl } = buildAvatarRescueQrData(avatar, playerName);
+    if (qrRescueImg) {
+        qrRescueImg.src = qrCodeImageUrl;
     }
 
     const imgEl = document.createElement("img");
@@ -516,30 +537,14 @@ export const renderQuizResult = (resultContainer, { quizResult, avatar, profile,
             imgEl.src = avatar.fallbackImagePath;
             return;
         }
-        avatarFrame.innerHTML = `
-            <p class="field__hint">
-                <i class="bi bi-image" aria-hidden="true"></i>
-                Sprite não encontrado (${escapeHtml(avatar.imagePath)})
-            </p>
-        `;
-        if (downloadBtn) {
-            downloadBtn.disabled = true;
-        }
+        const fallbackHint = document.createElement("p");
+        fallbackHint.className = "field__hint";
+        fallbackHint.textContent = `Sprite não encontrado (${avatar.imagePath})`;
+        avatarFrame.replaceChildren(fallbackHint);
+        if (qrRescuePanel) qrRescuePanel.hidden = true;
     });
 
     avatarFrame.appendChild(imgEl);
-
-    if (downloadBtn) {
-        downloadBtn.disabled = false;
-        downloadBtn.addEventListener("click", () => {
-            const link = document.createElement("a");
-            link.href = avatar.imagePath;
-            link.download = formatAvatarDownloadFilename(playerName, avatar.areaName);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-        });
-    }
 };
 
 /**

@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     let isTransitioning = false;
+    let isSubmittingQuiz = false;
 
     /**
      * Atualiza o estado habilitado/desabilitado do botão de avanço na etapa ativa.
@@ -92,8 +93,14 @@ document.addEventListener("DOMContentLoaded", () => {
      * Finaliza o quiz, calcula o vencedor, resolve o avatar, salva contato e exibe o resultado.
      */
     const handleFinishQuiz = async () => {
-        if (!store.isStepValid() || isTransitioning) return;
+        if (!store.isStepValid() || isTransitioning || isSubmittingQuiz) return;
         isTransitioning = true;
+        isSubmittingQuiz = true;
+
+        const finishBtn = document.getElementById("btnFinishQuiz");
+        if (finishBtn) {
+            finishBtn.disabled = true;
+        }
 
         try {
             await animateStepExit(stageContainer, "forward");
@@ -132,6 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 avatar,
                 profile: currentState.profile,
                 onRestart: () => {
+                    isSubmittingQuiz = false;
                     resultContainer.hidden = true;
                     if (quizSection) quizSection.hidden = false;
                     if (quizHud) quizHud.hidden = false;

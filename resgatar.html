@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Resgate seu Avatar RPG do DevSide diretamente no seu celular.">
+    <title>DevSide — Resgatar Meu Avatar</title>
+
+    <!-- Tipografia Space Grotesk -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Arquitetura CSS Modular do DevSide -->
+    <link rel="stylesheet" href="./css/main.css">
+</head>
+
+<body>
+    <main class="app-shell" style="max-width: 480px;">
+        <header class="hero-header">
+            <div class="hero-header__badge">
+                <i class="bi bi-phone-fill" aria-hidden="true"></i>
+                <span>DevSide | Resgate Mobile</span>
+            </div>
+            <h1 class="hero-header__title" style="font-size: clamp(1.75rem, 6vw, 2.3rem);">
+                Seu Avatar DevSide
+            </h1>
+            <p class="hero-header__subtitle" id="rescueClassSubtitle">
+                Carregando seu personagem...
+            </p>
+            <div class="hero-header__divider" aria-hidden="true"></div>
+        </header>
+
+        <section class="rpg-panel avatar-showcase" id="rescueCard">
+            <div class="winner-banner__icon-badge" id="rescueClassIconBadge" aria-hidden="true" style="width: 54px; height: 54px; font-size: 1.5rem; margin-bottom: var(--space-2);">
+                <i class="bi bi-code-slash" id="rescueClassIcon"></i>
+            </div>
+
+            <p class="winner-banner__eyebrow" id="rescueClassName">CLASSE DEVSIDE</p>
+
+            <div class="avatar-showcase__frame" id="rescueAvatarFrame" style="min-height: 280px; margin-top: var(--space-2);"></div>
+
+            <p class="avatar-showcase__nickname" id="rescueNickname"></p>
+
+            <div style="display: flex; flex-direction: column; gap: var(--space-3); margin-top: var(--space-6);">
+                <button type="button" class="btn-action" id="btnMobileDownload">
+                    <i class="bi bi-download" aria-hidden="true"></i>
+                    <span>Baixar Avatar no Celular</span>
+                </button>
+
+                <button type="button" class="btn-action btn-action--secondary" id="btnMobileShare" hidden>
+                    <i class="bi bi-share-fill" aria-hidden="true"></i>
+                    <span>Compartilhar (WhatsApp / Stories)</span>
+                </button>
+            </div>
+
+            <p class="field__hint" style="margin-top: var(--space-4);">
+                Dica: no iPhone (iOS), você também pode pressionar e segurar a imagem acima e tocar em <strong>"Salvar em Fotos"</strong>.
+            </p>
+        </section>
+    </main>
+
+    <script type="module">
+        import { buildAvatarPathsFromParams, formatAvatarDownloadFilename } from "./js/services/avatarService.js";
+        import { animateResultReveal } from "./js/ui/motionController.js";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const params = new URLSearchParams(window.location.search);
+
+            const areaKey = params.get("a") || "";
+            const genderFolder = params.get("g") || "";
+            const skinFolder = params.get("s") || "";
+            const spriteNumber = Number(params.get("n") || 0);
+
+            // Sanitização estrita do nickname (Prevenção contra XSS via textContent)
+            const rawNick = params.get("nick") || "Aventureiro";
+            const safeNickname = rawNick.trim().replace(/[<>"]/g, "").slice(0, 32) || "Aventureiro";
+
+            const nicknameEl = document.getElementById("rescueNickname");
+            const classNameEl = document.getElementById("rescueClassName");
+            const subtitleEl = document.getElementById("rescueClassSubtitle");
+            const classIconEl = document.getElementById("rescueClassIcon");
+            const avatarFrame = document.getElementById("rescueAvatarFrame");
+            const downloadBtn = document.getElementById("btnMobileDownload");
+            const shareBtn = document.getElementById("btnMobileShare");
+            const rescueCard = document.getElementById("rescueCard");
+
+            if (nicknameEl) {
+                nicknameEl.textContent = safeNickname;
+            }
+
+            const avatar = buildAvatarPathsFromParams(areaKey, genderFolder, skinFolder, spriteNumber);
+
+            if (!avatar || !avatarFrame) {
+                if (subtitleEl) subtitleEl.textContent = "Link de avatar inválido ou incompleto.";
+                if (downloadBtn) downloadBtn.disabled = true;
+                return;
+            }
+
+            if (classNameEl) {
+                classNameEl.textContent = `Classe: ${avatar.areaName}`;
+            }
+            if (subtitleEl) {
+                subtitleEl.textContent = `Parabéns! Você desbloqueou a classe ${avatar.areaName}.`;
+            }
+            if (classIconEl) {
+                classIconEl.className = `bi ${avatar.iconClass}`;
+            }
+
+            const imgEl = document.createElement("img");
+            imgEl.className = "avatar-showcase__img";
+            imgEl.src = avatar.imagePath;
+            imgEl.alt = `Avatar DevSide — ${avatar.areaName}`;
+            let triedFallback = false;
+
+            imgEl.addEventListener("load", () => {
+                imgEl.classList.add("avatar-showcase__img--loaded");
+            });
+
+            imgEl.addEventListener("error", () => {
+                if (!triedFallback && avatar.fallbackImagePath && avatar.fallbackImagePath !== imgEl.src) {
+                    triedFallback = true;
+                    avatar.imagePath = avatar.fallbackImagePath;
+                    imgEl.src = avatar.fallbackImagePath;
+                    return;
+                }
+                const errorMsg = document.createElement("p");
+                errorMsg.className = "field__hint";
+                errorMsg.textContent = "Não foi possível carregar a imagem do avatar.";
+                avatarFrame.replaceChildren(errorMsg);
+                if (downloadBtn) downloadBtn.disabled = true;
+            });
+
+            avatarFrame.appendChild(imgEl);
+            animateResultReveal(rescueCard);
+
+            const filename = formatAvatarDownloadFilename(safeNickname, avatar.areaName);
+
+            // Download direto via Blob para funcionar perfeitamente em navegadores mobile
+            downloadBtn?.addEventListener("click", async () => {
+                downloadBtn.disabled = true;
+                try {
+                    const response = await fetch(avatar.imagePath);
+                    const blob = await response.blob();
+                    const blobUrl = URL.createObjectURL(blob);
+
+                    const link = document.createElement("a");
+                    link.href = blobUrl;
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    setTimeout(() => URL.revokeObjectURL(blobUrl), 3000);
+                } catch {
+                    // Fallback direto caso o fetch de blob falhe
+                    const link = document.createElement("a");
+                    link.href = avatar.imagePath;
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                } finally {
+                    downloadBtn.disabled = false;
+                }
+            });
+
+            // Ativa o botão de Compartilhamento Nativo (WhatsApp / Instagram) se o celular suportar Web Share API
+            if (typeof navigator.share === "function" && shareBtn) {
+                shareBtn.hidden = false;
+                shareBtn.addEventListener("click", async () => {
+                    try {
+                        const response = await fetch(avatar.imagePath);
+                        const blob = await response.blob();
+                        const file = new File([blob], filename, { type: "image/png" });
+
+                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                            await navigator.share({
+                                title: `Meu Avatar DevSide — ${avatar.areaName}`,
+                                text: `Descobri meu lado da tecnologia no DevSide: ${avatar.areaName}!`,
+                                files: [file]
+                            });
+                            return;
+                        }
+
+                        await navigator.share({
+                            title: `Meu Avatar DevSide — ${avatar.areaName}`,
+                            text: `Descobri meu lado da tecnologia no DevSide: ${avatar.areaName}!`,
+                            url: window.location.href
+                        });
+                    } catch {
+                        // Cancelamento pelo usuário não é erro
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
+

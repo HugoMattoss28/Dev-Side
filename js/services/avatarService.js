@@ -1,12 +1,14 @@
 /**
  * @file avatarService.js
- * @description Serviço determinístico de seleção e resolução de sprites de avatar
- *              baseado no hash do e-mail do jogador, com fallback para case-sensitivity.
+ * @description Serviço determinístico de seleção, resolução de sprites e geração/validação
+ *              segura de links para resgate via QR Code no celular.
  */
 
 import { RPG_CLASSES } from "../config/quizData.js";
 
 const AVATAR_BASE_PATH = "avatar/Personagens/";
+const ALLOWED_GENDERS = ["Masculino", "Feminino"];
+const ALLOWED_SKINS = ["skin_1", "skin_2"];
 
 /**
  * Gera um número determinístico entre 1 e `limit` a partir de uma string semente.
@@ -53,8 +55,46 @@ export const resolveSkinFolder = (skinTone) => {
 };
 
 /**
- * Gera os metadados completos do avatar (incluindo caminho alternativo caso o servidor
- * diferencie maiúsculas/minúsculas como `Seguranca (1).png` vs `seguranca (10).png`).
+ * Constrói os caminhos de imagem seguros a partir de parâmetros validados.
+ * @param {string} areaKey
+ * @param {string} genderFolder
+ * @param {string} skinFolder
+ * @param {number} spriteNumber
+ * @returns {Object | null}
+ */
+export const buildAvatarPathsFromParams = (areaKey, genderFolder, skinFolder, spriteNumber) => {
+    const classConfig = RPG_CLASSES[areaKey];
+    if (!classConfig) return null;
+    if (!ALLOWED_GENDERS.includes(genderFolder)) return null;
+    if (!ALLOWED_SKINS.includes(skinFolder)) return null;
+
+    const num = Number(spriteNumber);
+    if (!Number.isInteger(num) || num < 1 || num > 40) return null;
+
+    const primaryPrefix = areaKey === "seguranca" ? "seguranca" : classConfig.folderName;
+    const alternatePrefix =
+        primaryPrefix.charAt(0) === primaryPrefix.charAt(0).toLowerCase()
+            ? primaryPrefix.charAt(0).toUpperCase() + primaryPrefix.slice(1)
+            : primaryPrefix.toLowerCase();
+
+    const baseDir = `${AVATAR_BASE_PATH}${classConfig.folderName}/${genderFolder}/sprites/${skinFolder}/`;
+    const imagePath = `${baseDir}${primaryPrefix} (${num}).png`;
+    const fallbackImagePath = `${baseDir}${alternatePrefix} (${num}).png`;
+
+    return {
+        areaKey,
+        areaName: classConfig.name,
+        iconClass: classConfig.iconClass,
+        genderFolder,
+        skinFolder,
+        spriteNumber: num,
+        imagePath,
+        fallbackImagePath
+    };
+};
+
+/**
+ * Gera os metadados completos do avatar com base nas escolhas do jogador.
  * @param {Object} params
  * @param {string} params.areaKey
  * @param {string} params.gender
@@ -78,25 +118,34 @@ export const resolveAvatarAsset = ({ areaKey, gender, skinTone, email }) => {
     const seed = `${cleanEmail}${areaKey}${genderFolder}${skinTone}`;
     const spriteNumber = computeDeterministicIndex(seed, maxSprites);
 
-    const primaryPrefix = areaKey === "seguranca" ? "seguranca" : classConfig.folderName;
-    const alternatePrefix =
-        primaryPrefix.charAt(0) === primaryPrefix.charAt(0).toLowerCase()
-            ? primaryPrefix.charAt(0).toUpperCase() + primaryPrefix.slice(1)
-            : primaryPrefix.toLowerCase();
+    return buildAvatarPathsFromParams(areaKey, genderFolder, skinFolder, spriteNumber);
+};
 
-    const baseDir = `${AVATAR_BASE_PATH}${classConfig.folderName}/${genderFolder}/sprites/${skinFolder}/`;
-    const imagePath = `${baseDir}${primaryPrefix} (${spriteNumber}).png`;
-    const fallbackImagePath = `${baseDir}${alternatePrefix} (${spriteNumber}).png`;
+/**
+ * Gera a URL completa da página mobile `resgatar.html` e a URL da imagem do QR Code.
+ * @param {Object} avatar
+ * @param {string} nickname
+ * @returns {{ rescueUrl: string, qrCodeImageUrl: string }}
+ */
+export const buildAvatarRescueQrData = (avatar, nickname) => {
+    const cleanNick = String(nickname || "Aventureiro")
+        .trim()
+        .replace(/[<>"]/g, "")
+        .slice(0, 32);
+
+    const url = new URL("resgatar.html", window.location.href);
+    url.searchParams.set("a", avatar.areaKey);
+    url.searchParams.set("g", avatar.genderFolder);
+    url.searchParams.set("s", avatar.skinFolder);
+    url.searchParams.set("n", String(avatar.spriteNumber));
+    url.searchParams.set("nick", cleanNick);
+
+    const rescueUrl = url.toString();
+    const qrCodeImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&ecc=M&data=${encodeURIComponent(rescueUrl)}`;
 
     return {
-        areaKey,
-        areaName: classConfig.name,
-        genderFolder,
-        skinTone,
-        skinFolder,
-        spriteNumber,
-        imagePath,
-        fallbackImagePath
+        rescueUrl,
+        qrCodeImageUrl
     };
 };
 
@@ -120,4 +169,3 @@ export const formatAvatarDownloadFilename = (nickname, areaName) => {
 
     return `${safeNickname}-${safeArea}.png`;
 };
-

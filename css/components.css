@@ -661,6 +661,54 @@
     border-color: var(--color-gold-base);
 }
 
+/* Card de QR Code para Resgate Mobile (.qr-rescue) */
+.qr-rescue {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border: 1px solid rgba(232, 185, 75, 0.35);
+    background: linear-gradient(145deg, rgba(20, 27, 48, 0.98), rgba(13, 18, 33, 0.98));
+}
+
+.qr-rescue__header {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-gold-light);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.qr-rescue__box {
+    padding: var(--space-2);
+    background: #ffffff;
+    border-radius: var(--radius-md);
+    border: 3px solid var(--color-gold-base);
+    box-shadow: var(--shadow-gold);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qr-rescue__img {
+    width: 176px;
+    height: 176px;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.qr-rescue__caption {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    max-width: 240px;
+}
+
 /* Destaque da Classe Vencedora */
 .winner-banner {
     text-align: center;
