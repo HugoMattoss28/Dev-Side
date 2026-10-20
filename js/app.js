@@ -155,6 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 onRestart: () => {
                     isSubmittingQuiz = false;
                     store.resetStore();
+                    delete document.documentElement.dataset.track;
                     resultContainer.hidden = true;
                     if (quizSection) quizSection.hidden = false;
                     if (quizHud) quizHud.hidden = false;
@@ -224,6 +225,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (target.name === "track" || target.name === "gender" || target.name === "skinTone") {
             store.updateProfileField(target.name, target.value);
+            if (target.name === "track") {
+                document.documentElement.dataset.track = target.value;
+            }
             const visualCard = target.closest(".identity-option, .skin-option");
             animateSelectionPulse(visualCard);
             refreshNavigationButtonState();

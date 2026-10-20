@@ -21,11 +21,13 @@
     --color-text-muted: #647099;
     --color-text-inverse: #140f04;
 
-    /* Cores de Destaque (Gold & Arcane Purple) */
+    /* Cores de Destaque (Gold & Arcane Purple — Dinâmicas por Trilha) */
     --color-gold-base: #e8b94b;
     --color-gold-light: #ffd66b;
     --color-gold-dim: #7a6431;
     --color-gold-glow: rgba(232, 185, 75, 0.35);
+    --color-accent-surface: rgba(232, 185, 75, 0.12);
+    --color-accent-border: rgba(232, 185, 75, 0.32);
 
     --color-purple-base: #7c4dff;
     --color-purple-light: #a98cff;
@@ -93,4 +95,55 @@
     --duration-normal: 320ms;
     --duration-slow: 520ms;
 }
+
+/* ==========================================================================
+   TEMAS DINÂMICOS POR TRILHA DE INTERESSE (TI / AGRONEGÓCIO / GESTÃO)
+   Ativados via :has() na Etapa 0 e via [data-track] nas perguntas e resultado
+   ========================================================================== */
+
+:root[data-track="ti"],
+:root:has(#trackTi:checked) {
+    --color-bg-nebula-purple: #0c264e;
+    --color-bg-nebula-blue: #161144;
+    --color-gold-base: #38bdf8;
+    --color-gold-light: #7dd3fc;
+    --color-gold-dim: #0369a1;
+    --color-gold-glow: rgba(56, 189, 248, 0.38);
+    --color-accent-surface: rgba(56, 189, 248, 0.13);
+    --color-accent-border: rgba(56, 189, 248, 0.38);
+    --color-purple-base: #0284c7;
+    --color-purple-light: #38bdf8;
+    --shadow-gold: 0 0 20px rgba(56, 189, 248, 0.35);
+}
+
+:root[data-track="agro"],
+:root:has(#trackAgro:checked) {
+    --color-bg-nebula-purple: #072c21;
+    --color-bg-nebula-blue: #0a2228;
+    --color-gold-base: #10b981;
+    --color-gold-light: #6ee7b7;
+    --color-gold-dim: #047857;
+    --color-gold-glow: rgba(16, 185, 129, 0.38);
+    --color-accent-surface: rgba(16, 185, 129, 0.13);
+    --color-accent-border: rgba(16, 185, 129, 0.38);
+    --color-purple-base: #059669;
+    --color-purple-light: #34d399;
+    --shadow-gold: 0 0 20px rgba(16, 185, 129, 0.35);
+}
+
+:root[data-track="gestao"],
+:root:has(#trackGestao:checked) {
+    --color-bg-nebula-purple: #2b1d08;
+    --color-bg-nebula-blue: #1b132e;
+    --color-gold-base: #e8b94b;
+    --color-gold-light: #ffd66b;
+    --color-gold-dim: #b45309;
+    --color-gold-glow: rgba(232, 185, 75, 0.38);
+    --color-accent-surface: rgba(232, 185, 75, 0.13);
+    --color-accent-border: rgba(232, 185, 75, 0.38);
+    --color-purple-base: #d97706;
+    --color-purple-light: #fbbf24;
+    --shadow-gold: 0 0 20px rgba(232, 185, 75, 0.35);
+}
+
 

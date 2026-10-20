@@ -1,0 +1,57 @@
+1. Você se considera:
+- Extrovertido(a)
+- Introvertido(a)
+
+2. O que mais chama sua atenção em um site?
+- Visual e cores
+- Funcionalidades
+- Velocidade
+- Segurança
+
+3. Qual desafio você prefere?
+- Criar programas ou jogos
+- Criar interfaces
+- Conectar computadores
+- Impedir invasões
+- Resolver problemas técnicos
+
+4. Quando um site apresenta problemas, você:
+- Tenta entender o funcionamento
+- Pensa em melhorar o visual
+- Busca uma solução
+
+5. Você tem curiosidade sobre como a internet funciona?
+- Sim
+- Não
+
+6. O que mais combina com você?
+- Criar coisas
+- Resolver problemas
+- Ajudar pessoas
+- Entender como tudo funciona
+
+7. O que gostaria de aprender?
+- Programação
+- Design
+- Redes
+- Segurança digital
+- Suporte técnico
+
+8. Como prefere trabalhar?
+- Sozinho(a)
+- Em equipe
+- Atendendo pessoas
+
+9. Qual área mais te interessa?
+- Programação
+- Design
+- Redes
+- Cibersegurança
+
+10. O que mais te motiva a aprender?
+- Criar algo útil
+- Superar desafios
+- Entender como funciona
+- Ajudar pessoas
+- Melhorar algo
+- Matar a curiosidade

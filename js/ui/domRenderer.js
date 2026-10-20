@@ -465,7 +465,7 @@ export const renderQuizResult = (resultContainer, { quizResult, avatar, profile,
                 </div>
 
                 <div class="xp-row__meter">
-                    <div class="xp-row__track" role="progressbar" aria-label="XP em ${item.name}" aria-valuemin="0" aria-valuemax="50" aria-valuenow="${item.xp}">
+                    <div class="xp-row__track" role="progressbar" aria-label="XP em ${item.name}" aria-valuemin="0" aria-valuemax="${item.maxXp || 50}" aria-valuenow="${item.xp}">
                         <div class="xp-row__fill" data-xp-fill></div>
                     </div>
                     <span class="xp-row__value" data-xp-value>0 XP</span>

@@ -129,24 +129,40 @@ export const calculateQuizResult = (answersMap, track = "ti") => {
     const winnerXp = totals[winnerKey];
     const runnerUpXp = totals[runnerUpKey];
 
+    // Calcula dinamicamente o XP máximo de referência da trilha (ex: 8 no Agro, 50 em TI/Gestão)
+    let maxTrackXp = 0;
+    for (const question of questions) {
+        let maxQuestionPoints = 0;
+        for (const opt of question.options) {
+            for (const pts of Object.values(opt.scores)) {
+                if (pts > maxQuestionPoints) maxQuestionPoints = pts;
+            }
+        }
+        maxTrackXp += maxQuestionPoints;
+    }
+    if (maxTrackXp <= 0) maxTrackXp = MAX_XP_REFERENCE;
+
+    const highXpThreshold = Math.ceil(maxTrackXp * 0.6);
+
     const primaryDescription =
-        winnerXp >= HIGH_XP_THRESHOLD
+        winnerXp >= highXpThreshold
             ? winnerClass.descriptions.primaryHigh
             : winnerClass.descriptions.primaryNormal;
 
     const secondaryDescription =
-        runnerUpXp >= HIGH_XP_THRESHOLD
+        runnerUpXp >= highXpThreshold
             ? runnerUpClass.descriptions.secondaryHigh
             : runnerUpClass.descriptions.secondaryNormal;
 
     const breakdown = classKeys.map((key) => {
         const xp = totals[key];
-        const ratio = Math.min(xp / MAX_XP_REFERENCE, 1);
+        const ratio = Math.min(xp / maxTrackXp, 1);
         return {
             id: key,
             name: RPG_CLASSES[key].name,
             iconClass: RPG_CLASSES[key].iconClass,
             xp,
+            maxXp: maxTrackXp,
             ratio,
             percentage: Math.round(ratio * 100)
         };
@@ -197,9 +213,11 @@ export const createQuizStore = () => {
 
         updateProfileField(field, value) {
             if (field in state.profile) {
-                // Se o aluno trocar de área de interesse (TI / Agro / Gestão), limpa respostas anteriores
+                // Se o aluno trocar de área de interesse (TI / Agro / Gestão), limpa respostas e atualiza total de etapas
                 if (field === "track" && state.profile.track !== value) {
                     state.answers = {};
+                    const trackQuestions = QUIZ_QUESTIONS_BY_TRACK[value] || QUIZ_QUESTIONS_BY_TRACK.ti;
+                    state.totalQuestionSteps = trackQuestions.length;
                 }
                 state.profile[field] = value;
             }
@@ -245,6 +263,7 @@ export const createQuizStore = () => {
 
         resetStore() {
             state.currentStep = 0;
+            state.totalQuestionSteps = QUIZ_QUESTIONS_BY_TRACK.ti.length;
             state.contactRecordIndex = null;
             state.profile = {
                 track: "",

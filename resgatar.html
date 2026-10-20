@@ -65,6 +65,7 @@
     </main>
 
     <script type="module">
+        import { RPG_CLASSES } from "./js/config/quizData.js";
         import {
             buildAvatarPathsFromParams,
             renderCollectibleAvatarCard,
@@ -99,6 +100,11 @@
             if (!avatar || !reflectiveCard || !cardImg) {
                 if (subtitleEl) subtitleEl.textContent = "Link de card inválido ou incompleto.";
                 return;
+            }
+
+            const track = RPG_CLASSES[areaKey]?.track;
+            if (track) {
+                document.documentElement.dataset.track = track;
             }
 
             if (subtitleEl) {

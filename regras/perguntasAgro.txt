@@ -1,0 +1,73 @@
+Atue como um Engenheiro Front-end Sênior.
+
+Preciso que você implemente a estrutura de dados e a lógica de cálculo do nosso Quiz usando JavaScript Vanilla puro. O objetivo é calcular qual perfil "Agro" o aluno tem, baseado nas opções que ele selecionar.
+
+Aqui está a Matriz de Pontuação Oficial. Cada vez que o usuário escolhe uma opção, ela deve somar +1 ponto para a classe correspondente.
+
+Tabela de Mapeamento (Questão x Opção = Ponto para Classe):
+
+Questão 01: Opção A (AgroTech) | Opção B (AgroProd) | Opção C (AgroEco) | Opção D (AgroLab)
+
+Questão 02: Opção A (AgroTech) | Opção B (AgroProd) | Opção C (AgroEco) | Opção D (AgroLab)
+
+Questão 03: Opção A (AgroLab) | Opção B (AgroTech) | Opção C (AgroProd) | Opção D (AgroLab)
+
+Questão 04: Opção A (AgroTech) | Opção B (AgroProd) | Opção C (AgroLab) | Opção D (AgroEco)
+
+Questão 05: Opção A (AgroTech) | Opção B (AgroLab) | Opção C (AgroEco) | Opção D (AgroTech)
+
+Questão 06: Opção A (AgroTech) | Opção B (AgroProd) | Opção C (AgroProd) | Opção D (AgroLab)
+
+Questão 07: Opção A (AgroProd) | Opção B (AgroEco) | Opção C (AgroTech) | Opção D (AgroLab)
+
+Questão 08: Opção A (AgroTech) | Opção B (AgroLab) | Opção C (AgroProd) | Opção D (AgroProd)
+
+questões: 
+
+01. Se você pudesse escolher uma missão, qual seria?
+A- Criar tecnologias para facilitar a vida
+B- Produzir alimentos de forma sustentável
+C- Cuidar da natureza e dos recursos naturais
+D- Descobrir soluções para grandes desafios
+
+02. Você visita uma fazenda supertecnológica. O que chama sua atenção?
+A- Os drones e equipamentos inteligentes
+B- As plantações e os diferentes cultivos
+C- A preservação das florestas e da água
+D- Os experimentos e as novas descobertas
+
+03. Um produtor está com problemas na plantação. O que você faria?
+A- Investigaria a causa do problema
+B- Procuraria uma solução tecnológica
+C- Conversaria com pessoas experientes
+D- Testaria diferentes alternativas
+
+04. Qual dessas experiências você gostaria de viver?
+A- Pilotar um drone sobre uma lavoura
+B- Cultivar alimentos em uma estufa
+C-Analisar amostras em um laboratório
+D- Participar de um projeto ambiental
+
+05. Se você pudesse inventar algo para o futuro, o que seria?
+A- Uma máquina que trabalha sozinha no campo
+B- Uma planta mais resistente ao calor
+C- Uma tecnologia que economiza água
+D- Um aplicativo que ajuda os produtores
+
+06. Em um trabalho em equipe, qual papel mais combina com você?
+A- Ter ideias criativas e inovadoras
+B- Organizar e planejar as atividades
+C- Colocar a mão na massa
+D- Analisar os resultados e propor melhorias
+
+07. Qual desses desafios você gostaria de ajudar a resolver?
+A- Produzir mais alimentos com menos recursos
+B- Reduzir os impactos ambientais
+C- Levar tecnologia para as propriedades rurais
+D- Melhorar a qualidade dos alimentos
+
+08. Como você imagina seu futuro profissional?
+A- Trabalhando com tecnologia e inovação
+B- Desenvolvendo pesquisas e descobertas
+C- Atuando diretamente no campo
+D- Liderando projetos e negócios do agro

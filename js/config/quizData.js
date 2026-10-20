@@ -315,26 +315,27 @@ export const SKIN_TONE_OPTIONS = Object.freeze([
 
 export const QUIZ_QUESTIONS_BY_TRACK = Object.freeze({
     // =========================================================================
-    // QUIZ 1: TECNOLOGIA DA INFORMAÇÃO (TI) — 10 PERGUNTAS
+    // QUIZ 1: TECNOLOGIA DA INFORMAÇÃO (TI) — 10 PERGUNTAS (regras/perguntasTI.txt)
+    // Pontuação balanceada de forma justa entre Programação, Design, Redes e Cibersegurança
     // =========================================================================
     ti: [
         {
             step: 1,
             id: "q1",
             type: "single",
-            title: "01. Você é uma pessoa extrovertida ou introvertida?",
+            title: "01. Você se considera:",
             options: [
                 {
                     id: "q1a",
                     value: "extrovertido",
                     label: "Extrovertido(a)",
-                    scores: { programacao: 1, design: 4, redes: 3, seguranca: 2 }
+                    scores: { programacao: 2, design: 5, redes: 4, seguranca: 2 }
                 },
                 {
                     id: "q1b",
                     value: "introvertido",
                     label: "Introvertido(a)",
-                    scores: { programacao: 5, design: 4, redes: 2, seguranca: 3 }
+                    scores: { programacao: 5, design: 2, redes: 3, seguranca: 5 }
                 }
             ]
         },
@@ -342,32 +343,32 @@ export const QUIZ_QUESTIONS_BY_TRACK = Object.freeze({
             step: 2,
             id: "q2",
             type: "multiple",
-            title: "02. O que costuma chamar sua atenção ao acessar aplicativos ou sites?",
+            title: "02. O que mais chama sua atenção em um site?",
             hint: "Você pode selecionar mais de uma alternativa",
             options: [
                 {
                     id: "q2a",
                     value: "visual",
-                    label: "A aparência e as cores",
-                    scores: { programacao: 2, design: 5, redes: 3, seguranca: 1 }
+                    label: "Visual e cores",
+                    scores: { programacao: 1, design: 5, redes: 1, seguranca: 1 }
                 },
                 {
                     id: "q2b",
                     value: "funcionalidade",
-                    label: "As funções, ferramentas e como funciona",
-                    scores: { programacao: 5, design: 3, redes: 4, seguranca: 5 }
+                    label: "Funcionalidades",
+                    scores: { programacao: 5, design: 2, redes: 2, seguranca: 2 }
                 },
                 {
                     id: "q2c",
                     value: "velocidade",
-                    label: "A velocidade e o desempenho da página",
-                    scores: { programacao: 4, design: 2, redes: 5, seguranca: 3 }
+                    label: "Velocidade",
+                    scores: { programacao: 2, design: 1, redes: 5, seguranca: 2 }
                 },
                 {
                     id: "q2d",
                     value: "seguranca",
-                    label: "A segurança e privacidade da página",
-                    scores: { programacao: 3, design: 2, redes: 4, seguranca: 4 }
+                    label: "Segurança",
+                    scores: { programacao: 2, design: 1, redes: 2, seguranca: 5 }
                 }
             ]
         },
@@ -375,37 +376,37 @@ export const QUIZ_QUESTIONS_BY_TRACK = Object.freeze({
             step: 3,
             id: "q3",
             type: "single",
-            title: "03. Qual desses desafios parece ser mais divertido?",
+            title: "03. Qual desafio você prefere?",
             options: [
                 {
                     id: "q3a",
                     value: "programar",
-                    label: "Criar um programa ou jogo",
-                    scores: { programacao: 5, design: 3, redes: 2, seguranca: 2 }
+                    label: "Criar programas ou jogos",
+                    scores: { programacao: 5, design: 2, redes: 1, seguranca: 1 }
                 },
                 {
                     id: "q3b",
                     value: "design",
-                    label: "Criar uma interface bonita",
-                    scores: { programacao: 3, design: 5, redes: 1, seguranca: 1 }
+                    label: "Criar interfaces",
+                    scores: { programacao: 2, design: 5, redes: 1, seguranca: 1 }
                 },
                 {
                     id: "q3c",
                     value: "rede",
-                    label: "Fazer computadores se conectarem",
-                    scores: { programacao: 2, design: 1, redes: 5, seguranca: 3 }
+                    label: "Conectar computadores",
+                    scores: { programacao: 1, design: 1, redes: 5, seguranca: 2 }
                 },
                 {
                     id: "q3d",
                     value: "seguranca",
-                    label: "Descobrir e impedir uma invasão",
-                    scores: { programacao: 2, design: 1, redes: 4, seguranca: 5 }
+                    label: "Impedir invasões",
+                    scores: { programacao: 2, design: 1, redes: 2, seguranca: 5 }
                 },
                 {
                     id: "q3e",
                     value: "suporte",
-                    label: "Resolver um problema de computador",
-                    scores: { programacao: 2, design: 1, redes: 4, seguranca: 3 }
+                    label: "Resolver problemas técnicos",
+                    scores: { programacao: 2, design: 1, redes: 5, seguranca: 4 }
                 }
             ]
         },
@@ -413,25 +414,25 @@ export const QUIZ_QUESTIONS_BY_TRACK = Object.freeze({
             step: 4,
             id: "q4",
             type: "single",
-            title: "04. Quando você tem dificuldade para usar um site ou aplicativo, qual é a primeira coisa que vem à sua cabeça?",
+            title: "04. Quando um site apresenta problemas, você:",
             options: [
                 {
                     id: "q4a",
                     value: "entender",
-                    label: "Quero entender como ele funciona",
-                    scores: { programacao: 5, design: 1, redes: 3, seguranca: 2 }
+                    label: "Tenta entender o funcionamento",
+                    scores: { programacao: 5, design: 1, redes: 3, seguranca: 4 }
                 },
                 {
                     id: "q4b",
                     value: "interface",
-                    label: "Acho que a interface poderia ser melhor",
-                    scores: { programacao: 3, design: 5, redes: 2, seguranca: 1 }
+                    label: "Pensa em melhorar o visual",
+                    scores: { programacao: 1, design: 5, redes: 1, seguranca: 1 }
                 },
                 {
                     id: "q4c",
                     value: "ajuda",
-                    label: "Procuro uma forma de resolver o problema",
-                    scores: { programacao: 5, design: 1, redes: 2, seguranca: 2 }
+                    label: "Busca uma solução",
+                    scores: { programacao: 2, design: 1, redes: 5, seguranca: 4 }
                 }
             ]
         },
@@ -439,19 +440,19 @@ export const QUIZ_QUESTIONS_BY_TRACK = Object.freeze({
             step: 5,
             id: "q5",
             type: "single",
-            title: "05. Você já ficou curioso(a) sobre como a internet conecta pessoas e permite que você acesse sites e aplicativos de qualquer lugar?",
+            title: "05. Você tem curiosidade sobre como a internet funciona?",
             options: [
                 {
                     id: "q5a",
                     value: "sim",
-                    label: "Sim, acho isso muito interessante",
-                    scores: { programacao: 2, design: 1, redes: 5, seguranca: 4 }
+                    label: "Sim",
+                    scores: { programacao: 2, design: 1, redes: 5, seguranca: 5 }
                 },
                 {
                     id: "q5b",
                     value: "nao",
-                    label: "Nunca parei para pensar nisso",
-                    scores: { programacao: 3, design: 5, redes: 1, seguranca: 2 }
+                    label: "Não",
+                    scores: { programacao: 5, design: 5, redes: 1, seguranca: 1 }
                 }
             ]
         },
@@ -459,31 +460,31 @@ export const QUIZ_QUESTIONS_BY_TRACK = Object.freeze({
             step: 6,
             id: "q6",
             type: "single",
-            title: "06. Qual dessas frases mais combina com você?",
+            title: "06. O que mais combina com você?",
             options: [
                 {
                     id: "q6a",
                     value: "criar",
-                    label: "Gosto de criar coisas novas",
-                    scores: { programacao: 5, design: 5, redes: 2, seguranca: 2 }
+                    label: "Criar coisas",
+                    scores: { programacao: 4, design: 5, redes: 1, seguranca: 1 }
                 },
                 {
                     id: "q6b",
                     value: "resolver",
-                    label: "Gosto de resolver problemas",
-                    scores: { programacao: 5, design: 3, redes: 1, seguranca: 1 }
+                    label: "Resolver problemas",
+                    scores: { programacao: 5, design: 2, redes: 3, seguranca: 3 }
                 },
                 {
                     id: "q6c",
                     value: "ajudar",
-                    label: "Gosto de ajudar outras pessoas",
-                    scores: { programacao: 3, design: 2, redes: 3, seguranca: 4 }
+                    label: "Ajudar pessoas",
+                    scores: { programacao: 1, design: 3, redes: 4, seguranca: 5 }
                 },
                 {
                     id: "q6d",
                     value: "explorar",
-                    label: "Gosto de descobrir como as coisas funcionam",
-                    scores: { programacao: 5, design: 3, redes: 4, seguranca: 3 }
+                    label: "Entender como tudo funciona",
+                    scores: { programacao: 3, design: 1, redes: 5, seguranca: 4 }
                 }
             ]
         },
@@ -491,37 +492,37 @@ export const QUIZ_QUESTIONS_BY_TRACK = Object.freeze({
             step: 7,
             id: "q7",
             type: "single",
-            title: "07. Se pudesse aprender uma coisa nova sobre tecnologia, o que escolheria?",
+            title: "07. O que gostaria de aprender?",
             options: [
                 {
                     id: "q7a",
                     value: "programacao",
-                    label: "Aprender a programar",
-                    scores: { programacao: 5, design: 4, redes: 3, seguranca: 2 }
+                    label: "Programação",
+                    scores: { programacao: 5, design: 2, redes: 1, seguranca: 1 }
                 },
                 {
                     id: "q7b",
                     value: "design",
-                    label: "Criar designs e interfaces",
-                    scores: { programacao: 3, design: 5, redes: 1, seguranca: 1 }
+                    label: "Design",
+                    scores: { programacao: 1, design: 5, redes: 1, seguranca: 1 }
                 },
                 {
                     id: "q7c",
                     value: "redes",
-                    label: "Montar e configurar redes",
-                    scores: { programacao: 3, design: 1, redes: 5, seguranca: 4 }
+                    label: "Redes",
+                    scores: { programacao: 1, design: 1, redes: 5, seguranca: 2 }
                 },
                 {
                     id: "q7d",
                     value: "seguranca",
-                    label: "Aprender sobre segurança digital",
-                    scores: { programacao: 1, design: 1, redes: 4, seguranca: 5 }
+                    label: "Segurança digital",
+                    scores: { programacao: 1, design: 1, redes: 2, seguranca: 5 }
                 },
                 {
                     id: "q7e",
                     value: "suporte",
-                    label: "Aprender a configurar e solucionar problemas",
-                    scores: { programacao: 4, design: 2, redes: 4, seguranca: 3 }
+                    label: "Suporte técnico",
+                    scores: { programacao: 2, design: 1, redes: 5, seguranca: 4 }
                 }
             ]
         },
@@ -529,25 +530,25 @@ export const QUIZ_QUESTIONS_BY_TRACK = Object.freeze({
             step: 8,
             id: "q8",
             type: "single",
-            title: "08. Como você prefere trabalhar?",
+            title: "08. Como prefere trabalhar?",
             options: [
                 {
                     id: "q8a",
                     value: "sozinho",
-                    label: "Sozinho(a), concentrado no meu trabalho",
-                    scores: { programacao: 5, design: 1, redes: 1, seguranca: 4 }
+                    label: "Sozinho(a)",
+                    scores: { programacao: 5, design: 2, redes: 2, seguranca: 5 }
                 },
                 {
                     id: "q8b",
                     value: "equipe",
-                    label: "Em equipe, trocando ideias",
-                    scores: { programacao: 2, design: 4, redes: 5, seguranca: 3 }
+                    label: "Em equipe",
+                    scores: { programacao: 3, design: 5, redes: 4, seguranca: 2 }
                 },
                 {
                     id: "q8c",
                     value: "pessoas",
-                    label: "Ajudando e conversando com pessoas",
-                    scores: { programacao: 2, design: 4, redes: 4, seguranca: 4 }
+                    label: "Atendendo pessoas",
+                    scores: { programacao: 1, design: 4, redes: 5, seguranca: 3 }
                 }
             ]
         },
@@ -555,31 +556,31 @@ export const QUIZ_QUESTIONS_BY_TRACK = Object.freeze({
             step: 9,
             id: "q9",
             type: "single",
-            title: "09. Qual dessas áreas mais desperta sua curiosidade?",
+            title: "09. Qual área mais te interessa?",
             options: [
                 {
                     id: "q9a",
                     value: "programacao",
                     label: "Programação",
-                    scores: { programacao: 5, design: 4, redes: 1, seguranca: 1 }
+                    scores: { programacao: 5, design: 1, redes: 1, seguranca: 1 }
                 },
                 {
                     id: "q9b",
                     value: "design",
-                    label: "Design e criação",
-                    scores: { programacao: 4, design: 5, redes: 1, seguranca: 1 }
+                    label: "Design",
+                    scores: { programacao: 1, design: 5, redes: 1, seguranca: 1 }
                 },
                 {
                     id: "q9c",
                     value: "redes",
-                    label: "Redes e Internet",
-                    scores: { programacao: 2, design: 2, redes: 5, seguranca: 4 }
+                    label: "Redes",
+                    scores: { programacao: 1, design: 1, redes: 5, seguranca: 2 }
                 },
                 {
                     id: "q9d",
                     value: "seguranca",
                     label: "Cibersegurança",
-                    scores: { programacao: 3, design: 1, redes: 4, seguranca: 5 }
+                    scores: { programacao: 1, design: 1, redes: 2, seguranca: 5 }
                 }
             ]
         },
@@ -587,50 +588,50 @@ export const QUIZ_QUESTIONS_BY_TRACK = Object.freeze({
             step: 10,
             id: "q10",
             type: "single",
-            title: "10. O que mais te motiva quando aprende algo novo?",
+            title: "10. O que mais te motiva a aprender?",
             options: [
                 {
                     id: "q10a",
                     value: "criar",
-                    label: "Criar algo que posso usar",
-                    scores: { programacao: 5, design: 5, redes: 1, seguranca: 1 }
+                    label: "Criar algo útil",
+                    scores: { programacao: 5, design: 5, redes: 2, seguranca: 1 }
                 },
                 {
                     id: "q10b",
                     value: "desafio",
-                    label: "Enfrentar um desafio",
-                    scores: { programacao: 4, design: 4, redes: 2, seguranca: 2 }
+                    label: "Superar desafios",
+                    scores: { programacao: 4, design: 2, redes: 3, seguranca: 5 }
                 },
                 {
                     id: "q10c",
                     value: "descoberta",
-                    label: "Descobrir como algo funciona",
-                    scores: { programacao: 4, design: 4, redes: 1, seguranca: 1 }
+                    label: "Entender como funciona",
+                    scores: { programacao: 4, design: 1, redes: 5, seguranca: 4 }
                 },
                 {
                     id: "q10d",
                     value: "ajudar",
-                    label: "Poder ajudar alguém",
-                    scores: { programacao: 3, design: 1, redes: 4, seguranca: 2 }
+                    label: "Ajudar pessoas",
+                    scores: { programacao: 2, design: 4, redes: 4, seguranca: 4 }
                 },
                 {
                     id: "q10e",
                     value: "melhorar",
-                    label: "Melhorar algo que já existe",
-                    scores: { programacao: 5, design: 4, redes: 3, seguranca: 2 }
+                    label: "Melhorar algo",
+                    scores: { programacao: 3, design: 5, redes: 4, seguranca: 3 }
                 },
                 {
                     id: "q10f",
                     value: "curiosidade",
-                    label: "Satisfazer minha curiosidade",
-                    scores: { programacao: 2, design: 3, redes: 5, seguranca: 2 }
+                    label: "Matar a curiosidade",
+                    scores: { programacao: 3, design: 2, redes: 4, seguranca: 5 }
                 }
             ]
         }
     ],
 
     // =========================================================================
-    // QUIZ 2: AGRONEGÓCIO / ENGENHARIA AGRONÔMICA — 10 PERGUNTAS
+    // QUIZ 2: AGRONEGÓCIO — 08 PERGUNTAS E MATRIZ OFICIAL (regras/perguntasAgro.txt)
     // Classes: agrotech, agroprod, agroeco, agrolab
     // =========================================================================
     agro: [
@@ -638,52 +639,63 @@ export const QUIZ_QUESTIONS_BY_TRACK = Object.freeze({
             step: 1,
             id: "q1",
             type: "single",
-            title: "01. Onde você se imagina trabalhando com mais entusiasmo?",
+            title: "01. Se você pudesse escolher uma missão, qual seria?",
             options: [
                 {
                     id: "q1a",
-                    value: "campo_aberto",
-                    label: "Ao ar livre, acompanhando plantações e colheitas de perto",
-                    scores: { agrotech: 2, agroprod: 5, agroeco: 4, agrolab: 1 }
+                    value: "criar_tech",
+                    label: "Criar tecnologias para facilitar a vida",
+                    scores: { agrotech: 1, agroprod: 0, agroeco: 0, agrolab: 0 }
                 },
                 {
                     id: "q1b",
-                    value: "tecnologia_lab",
-                    label: "Operando tecnologias avançadas, drones ou realizando análises em laboratório",
-                    scores: { agrotech: 5, agroprod: 2, agroeco: 2, agrolab: 5 }
+                    value: "produzir_alimentos",
+                    label: "Produzir alimentos de forma sustentável",
+                    scores: { agrotech: 0, agroprod: 1, agroeco: 0, agrolab: 0 }
+                },
+                {
+                    id: "q1c",
+                    value: "cuidar_natureza",
+                    label: "Cuidar da natureza e dos recursos naturais",
+                    scores: { agrotech: 0, agroprod: 0, agroeco: 1, agrolab: 0 }
+                },
+                {
+                    id: "q1d",
+                    value: "descobrir_solucoes",
+                    label: "Descobrir soluções para grandes desafios",
+                    scores: { agrotech: 0, agroprod: 0, agroeco: 0, agrolab: 1 }
                 }
             ]
         },
         {
             step: 2,
             id: "q2",
-            type: "multiple",
-            title: "02. Quando você pensa no futuro do Agronegócio, o que mais chama sua atenção?",
-            hint: "Você pode selecionar mais de uma alternativa",
+            type: "single",
+            title: "02. Você visita uma fazenda supertecnológica. O que chama sua atenção?",
             options: [
                 {
                     id: "q2a",
-                    value: "drones_sensores",
-                    label: "Drones, tratores autônomos, sensores e satélites no campo",
-                    scores: { agrotech: 5, agroprod: 3, agroeco: 2, agrolab: 2 }
+                    value: "drones_equipamentos",
+                    label: "Os drones e equipamentos inteligentes",
+                    scores: { agrotech: 1, agroprod: 0, agroeco: 0, agrolab: 0 }
                 },
                 {
                     id: "q2b",
-                    value: "alta_producao",
-                    label: "Produzir mais alimentos com qualidade para abastecer o mundo",
-                    scores: { agrotech: 3, agroprod: 5, agroeco: 3, agrolab: 2 }
+                    value: "plantacoes_cultivos",
+                    label: "As plantações e os diferentes cultivos",
+                    scores: { agrotech: 0, agroprod: 1, agroeco: 0, agrolab: 0 }
                 },
                 {
                     id: "q2c",
-                    value: "sustentabilidade",
-                    label: "Preservar a água, recuperar o solo e produzir sem agredir a natureza",
-                    scores: { agrotech: 2, agroprod: 3, agroeco: 5, agrolab: 3 }
+                    value: "preservacao_agua",
+                    label: "A preservação das florestas e da água",
+                    scores: { agrotech: 0, agroprod: 0, agroeco: 1, agrolab: 0 }
                 },
                 {
                     id: "q2d",
-                    value: "genetica_pesquisa",
-                    label: "Descobrir novas sementes, fertilizantes e soluções científicas",
-                    scores: { agrotech: 3, agroprod: 2, agroeco: 2, agrolab: 5 }
+                    value: "experimentos_descobertas",
+                    label: "Os experimentos e as novas descobertas",
+                    scores: { agrotech: 0, agroprod: 0, agroeco: 0, agrolab: 1 }
                 }
             ]
         },
@@ -691,31 +703,31 @@ export const QUIZ_QUESTIONS_BY_TRACK = Object.freeze({
             step: 3,
             id: "q3",
             type: "single",
-            title: "03. Qual desses desafios no campo parece ser mais interessante para você?",
+            title: "03. Um produtor está com problemas na plantação. O que você faria?",
             options: [
                 {
                     id: "q3a",
-                    value: "automatizar",
-                    label: "Automatizar a irrigação usando sensores inteligentes e aplicativos",
-                    scores: { agrotech: 5, agroprod: 3, agroeco: 3, agrolab: 2 }
+                    value: "investigar_causa",
+                    label: "Investigaria a causa do problema",
+                    scores: { agrotech: 0, agroprod: 0, agroeco: 0, agrolab: 1 }
                 },
                 {
                     id: "q3b",
-                    value: "cultivar",
-                    label: "Planejar o plantio do início ao fim para alcançar uma safra recorde",
-                    scores: { agrotech: 2, agroprod: 5, agroeco: 2, agrolab: 2 }
+                    value: "solucao_tecnologica",
+                    label: "Procuraria uma solução tecnológica",
+                    scores: { agrotech: 1, agroprod: 0, agroeco: 0, agrolab: 0 }
                 },
                 {
                     id: "q3c",
-                    value: "reflorestamento",
-                    label: "Recuperar uma área degradada e proteger nascentes de água",
-                    scores: { agrotech: 1, agroprod: 2, agroeco: 5, agrolab: 2 }
+                    value: "conversar_experientes",
+                    label: "Conversaria com pessoas experientes",
+                    scores: { agrotech: 0, agroprod: 1, agroeco: 0, agrolab: 0 }
                 },
                 {
                     id: "q3d",
-                    value: "pragas_lab",
-                    label: "Investigar no microscópio como combater uma praga agrícola",
-                    scores: { agrotech: 2, agroprod: 2, agroeco: 2, agrolab: 5 }
+                    value: "testar_alternativas",
+                    label: "Testaria diferentes alternativas",
+                    scores: { agrotech: 0, agroprod: 0, agroeco: 0, agrolab: 1 }
                 }
             ]
         },
@@ -723,25 +735,31 @@ export const QUIZ_QUESTIONS_BY_TRACK = Object.freeze({
             step: 4,
             id: "q4",
             type: "single",
-            title: "04. Se uma plantação não está crescendo como deveria, qual é a sua primeira reação?",
+            title: "04. Qual dessas experiências você gostaria de viver?",
             options: [
                 {
                     id: "q4a",
-                    value: "dados_clima",
-                    label: "Olhar os mapas de satélite, sensores de umidade e dados climáticos",
-                    scores: { agrotech: 5, agroprod: 3, agroeco: 2, agrolab: 3 }
+                    value: "pilotar_drone",
+                    label: "Pilotar um drone sobre uma lavoura",
+                    scores: { agrotech: 1, agroprod: 0, agroeco: 0, agrolab: 0 }
                 },
                 {
                     id: "q4b",
-                    value: "ir_lavoura",
-                    label: "Ir direto até a lavoura observar as plantas e o manejo prático",
-                    scores: { agrotech: 2, agroprod: 5, agroeco: 3, agrolab: 2 }
+                    value: "cultivar_estufa",
+                    label: "Cultivar alimentos em uma estufa",
+                    scores: { agrotech: 0, agroprod: 1, agroeco: 0, agrolab: 0 }
                 },
                 {
                     id: "q4c",
-                    value: "coletar_solo",
-                    label: "Coletar amostras do solo e das folhas para fazer testes e análises",
-                    scores: { agrotech: 2, agroprod: 2, agroeco: 3, agrolab: 5 }
+                    value: "analisar_amostras",
+                    label: "Analisar amostras em um laboratório",
+                    scores: { agrotech: 0, agroprod: 0, agroeco: 0, agrolab: 1 }
+                },
+                {
+                    id: "q4d",
+                    value: "projeto_ambiental",
+                    label: "Participar de um projeto ambiental",
+                    scores: { agrotech: 0, agroprod: 0, agroeco: 1, agrolab: 0 }
                 }
             ]
         },
@@ -749,19 +767,31 @@ export const QUIZ_QUESTIONS_BY_TRACK = Object.freeze({
             step: 5,
             id: "q5",
             type: "single",
-            title: "05. Você acha incrível como é possível produzir alimentos e ao mesmo tempo regenerar o meio ambiente?",
+            title: "05. Se você pudesse inventar algo para o futuro, o que seria?",
             options: [
                 {
                     id: "q5a",
-                    value: "muito_importante",
-                    label: "Sim! Equilibrar produção e natureza é a missão mais importante",
-                    scores: { agrotech: 2, agroprod: 3, agroeco: 5, agrolab: 3 }
+                    value: "maquina_autonoma",
+                    label: "Uma máquina que trabalha sozinha no campo",
+                    scores: { agrotech: 1, agroprod: 0, agroeco: 0, agrolab: 0 }
                 },
                 {
                     id: "q5b",
-                    value: "foco_eficiencia",
-                    label: "Acho importante, mas meu foco principal é na tecnologia e produtividade",
-                    scores: { agrotech: 5, agroprod: 4, agroeco: 1, agrolab: 3 }
+                    value: "planta_resistente",
+                    label: "Uma planta mais resistente ao calor",
+                    scores: { agrotech: 0, agroprod: 0, agroeco: 0, agrolab: 1 }
+                },
+                {
+                    id: "q5c",
+                    value: "economia_agua",
+                    label: "Uma tecnologia que economiza água",
+                    scores: { agrotech: 0, agroprod: 0, agroeco: 1, agrolab: 0 }
+                },
+                {
+                    id: "q5d",
+                    value: "app_produtores",
+                    label: "Um aplicativo que ajuda os produtores",
+                    scores: { agrotech: 1, agroprod: 0, agroeco: 0, agrolab: 0 }
                 }
             ]
         },
@@ -769,31 +799,31 @@ export const QUIZ_QUESTIONS_BY_TRACK = Object.freeze({
             step: 6,
             id: "q6",
             type: "single",
-            title: "06. Qual dessas frases mais combina com o seu perfil?",
+            title: "06. Em um trabalho em equipe, qual papel mais combina com você?",
             options: [
                 {
                     id: "q6a",
-                    value: "inovar",
-                    label: "Gosto de testar novas tecnologias e modernizar processos",
-                    scores: { agrotech: 5, agroprod: 3, agroeco: 2, agrolab: 3 }
+                    value: "ideias_criativas",
+                    label: "Ter ideias criativas e inovadoras",
+                    scores: { agrotech: 1, agroprod: 0, agroeco: 0, agrolab: 0 }
                 },
                 {
                     id: "q6b",
-                    value: "praticar",
-                    label: "Gosto de atividades práticas e de ver o resultado do meu trabalho crescendo",
-                    scores: { agrotech: 2, agroprod: 5, agroeco: 3, agrolab: 1 }
+                    value: "organizar_planejar",
+                    label: "Organizar e planejar as atividades",
+                    scores: { agrotech: 0, agroprod: 1, agroeco: 0, agrolab: 0 }
                 },
                 {
                     id: "q6c",
-                    value: "proteger",
-                    label: "Gosto de cuidar da natureza e pensar no impacto ambiental",
-                    scores: { agrotech: 2, agroprod: 2, agroeco: 5, agrolab: 2 }
+                    value: "mao_na_massa",
+                    label: "Colocar a mão na massa",
+                    scores: { agrotech: 0, agroprod: 1, agroeco: 0, agrolab: 0 }
                 },
                 {
                     id: "q6d",
-                    value: "pesquisar",
-                    label: "Gosto de fazer experimentos, pesquisar e descobrir o porquê das coisas",
-                    scores: { agrotech: 3, agroprod: 1, agroeco: 2, agrolab: 5 }
+                    value: "analisar_resultados",
+                    label: "Analisar os resultados e propor melhorias",
+                    scores: { agrotech: 0, agroprod: 0, agroeco: 0, agrolab: 1 }
                 }
             ]
         },
@@ -801,31 +831,31 @@ export const QUIZ_QUESTIONS_BY_TRACK = Object.freeze({
             step: 7,
             id: "q7",
             type: "single",
-            title: "07. Se você pudesse escolher uma aula prática agora na Fatec/Etec, qual seria?",
+            title: "07. Qual desses desafios você gostaria de ajudar a resolver?",
             options: [
                 {
                     id: "q7a",
-                    value: "pilotar_drone",
-                    label: "Mapeamento de fazendas com drones e agricultura de precisão",
-                    scores: { agrotech: 5, agroprod: 3, agroeco: 2, agrolab: 2 }
+                    value: "produzir_mais",
+                    label: "Produzir mais alimentos com menos recursos",
+                    scores: { agrotech: 0, agroprod: 1, agroeco: 0, agrolab: 0 }
                 },
                 {
                     id: "q7b",
-                    value: "manejo_culturas",
-                    label: "Cultivo prático, nutrição de plantas e gestão de produção no campo",
-                    scores: { agrotech: 2, agroprod: 5, agroeco: 3, agrolab: 2 }
+                    value: "reduzir_impactos",
+                    label: "Reduzir os impactos ambientais",
+                    scores: { agrotech: 0, agroprod: 0, agroeco: 1, agrolab: 0 }
                 },
                 {
                     id: "q7c",
-                    value: "agrofloresta",
-                    label: "Conservação do solo, recursos hídricos e sistemas agroflorestais",
-                    scores: { agrotech: 2, agroprod: 3, agroeco: 5, agrolab: 2 }
+                    value: "levar_tecnologia",
+                    label: "Levar tecnologia para as propriedades rurais",
+                    scores: { agrotech: 1, agroprod: 0, agroeco: 0, agrolab: 0 }
                 },
                 {
                     id: "q7d",
-                    value: "biotecnologia",
-                    label: "Laboratório de análise de sementes, solos e controle biológico",
-                    scores: { agrotech: 2, agroprod: 2, agroeco: 3, agrolab: 5 }
+                    value: "melhorar_qualidade",
+                    label: "Melhorar a qualidade dos alimentos",
+                    scores: { agrotech: 0, agroprod: 0, agroeco: 0, agrolab: 1 }
                 }
             ]
         },
@@ -833,89 +863,31 @@ export const QUIZ_QUESTIONS_BY_TRACK = Object.freeze({
             step: 8,
             id: "q8",
             type: "single",
-            title: "08. Como você prefere atuar em um projeto agrícola?",
+            title: "08. Como você imagina seu futuro profissional?",
             options: [
                 {
                     id: "q8a",
-                    value: "analise_sistemas",
-                    label: "Monitorando indicadores digitais e automatizando equipamentos",
-                    scores: { agrotech: 5, agroprod: 2, agroeco: 2, agrolab: 3 }
+                    value: "trabalhar_tech",
+                    label: "Trabalhando com tecnologia e inovação",
+                    scores: { agrotech: 1, agroprod: 0, agroeco: 0, agrolab: 0 }
                 },
                 {
                     id: "q8b",
-                    value: "liderando_campo",
-                    label: "Em movimento no campo, coordenando o plantio e a colheita",
-                    scores: { agrotech: 2, agroprod: 5, agroeco: 3, agrolab: 1 }
+                    value: "desenvolver_pesquisas",
+                    label: "Desenvolvendo pesquisas e descobertas",
+                    scores: { agrotech: 0, agroprod: 0, agroeco: 0, agrolab: 1 }
                 },
                 {
                     id: "q8c",
-                    value: "investigando",
-                    label: "Concentrado em testes, análises de qualidade e sustentabilidade",
-                    scores: { agrotech: 2, agroprod: 1, agroeco: 4, agrolab: 5 }
-                }
-            ]
-        },
-        {
-            step: 9,
-            id: "q9",
-            type: "single",
-            title: "09. Qual dessas áreas do Agro mais desperta sua curiosidade?",
-            options: [
-                {
-                    id: "q9a",
-                    value: "agrotech",
-                    label: "Agricultura Digital, Drones e Automação (AgroTech)",
-                    scores: { agrotech: 5, agroprod: 2, agroeco: 1, agrolab: 2 }
+                    value: "atuar_campo",
+                    label: "Atuando diretamente no campo",
+                    scores: { agrotech: 0, agroprod: 1, agroeco: 0, agrolab: 0 }
                 },
                 {
-                    id: "q9b",
-                    value: "agroprod",
-                    label: "Produção Vegetal, Cultivos e Gestão de Fazendas (AgroProd)",
-                    scores: { agrotech: 2, agroprod: 5, agroeco: 2, agrolab: 1 }
-                },
-                {
-                    id: "q9c",
-                    value: "agroeco",
-                    label: "Sustentabilidade, Solo e Meio Ambiente (AgroEco)",
-                    scores: { agrotech: 1, agroprod: 2, agroeco: 5, agrolab: 2 }
-                },
-                {
-                    id: "q9d",
-                    value: "agrolab",
-                    label: "Pesquisa Científica, Genética e Análises (AgroLab)",
-                    scores: { agrotech: 2, agroprod: 1, agroeco: 2, agrolab: 5 }
-                }
-            ]
-        },
-        {
-            step: 10,
-            id: "q10",
-            type: "single",
-            title: "10. O que mais te motiva ao pensar em uma carreira no Agronegócio?",
-            options: [
-                {
-                    id: "q10a",
-                    value: "revolucionar",
-                    label: "Levar alta tecnologia para revolucionar o trabalho no campo",
-                    scores: { agrotech: 5, agroprod: 3, agroeco: 2, agrolab: 2 }
-                },
-                {
-                    id: "q10b",
-                    value: "alimentar",
-                    label: "Participar da produção dos alimentos que chegam à mesa das pessoas",
-                    scores: { agrotech: 2, agroprod: 5, agroeco: 3, agrolab: 2 }
-                },
-                {
-                    id: "q10c",
-                    value: "planeta",
-                    label: "Garantir que o campo produza respeitando o planeta e as próximas gerações",
-                    scores: { agrotech: 2, agroprod: 2, agroeco: 5, agrolab: 2 }
-                },
-                {
-                    id: "q10d",
-                    value: "ciencia",
-                    label: "Desenvolver novas soluções científicas para superar pragas e mudanças climáticas",
-                    scores: { agrotech: 3, agroprod: 2, agroeco: 3, agrolab: 5 }
+                    id: "q8d",
+                    value: "liderar_projetos",
+                    label: "Liderando projetos e negócios do agro",
+                    scores: { agrotech: 0, agroprod: 1, agroeco: 0, agrolab: 0 }
                 }
             ]
         }

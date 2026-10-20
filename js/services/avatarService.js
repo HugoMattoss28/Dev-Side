@@ -53,6 +53,14 @@ const rangeFiles = (prefix, max, skipSet = new Set()) => {
  * @returns {string[]}
  */
 export const getFolderSpriteFiles = (areaKey, genderFolder, skinFolder) => {
+    // 0. Agronegócio possui 20 sprites por pasta (10 cortar1_personagem + 10 cortar2_personagem)
+    if (["agrotech", "agroprod", "agroeco", "agrolab"].includes(areaKey)) {
+        return [
+            ...rangeFiles("cortar1_personagem", 10),
+            ...rangeFiles("cortar2_personagem", 10)
+        ];
+    }
+
     // 1. Redes possui apenas personagem1..20 (em Feminino/Morena não há o 6)
     if (areaKey === "redes") {
         const skip =
