@@ -163,7 +163,7 @@ export const renderProfileStep = (stageContainer, profileState, isValid) => {
         <div class="form-grid" id="profileFormFields">
             <fieldset data-stagger>
                 <legend class="section-label">Qual área mais desperta seu interesse hoje?</legend>
-                <div class="identity-grid">
+                <div class="identity-grid identity-grid--tracks">
                     ${trackCardsHtml}
                 </div>
             </fieldset>

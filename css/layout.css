@@ -74,11 +74,24 @@
     gap: var(--space-4);
 }
 
-/* Grid de Identidade (Gênero) */
+/* Grid de Identidade (Gênero) e Trilhas (Cursos) — Mobile-First */
 .identity-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr;
     gap: var(--space-3);
+    align-items: stretch;
+}
+
+@media (min-width: 480px) {
+    .identity-grid:not(.identity-grid--tracks) {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 640px) {
+    .identity-grid--tracks {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
 }
 
 /* Grid de Alternativas do Quiz */
