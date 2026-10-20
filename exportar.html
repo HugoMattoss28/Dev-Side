@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevSide — Exportar Contatos</title>
+    <title>DevSide — Exportar Alunos (Supabase)</title>
 
     <!-- Tipografia Space Grotesk -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,66 +22,102 @@
     <main class="app-shell">
         <header class="hero-header">
             <div class="hero-header__badge">
-                <i class="bi bi-database-down" aria-hidden="true"></i>
-                <span>DevSide | Administração</span>
+                <i class="bi bi-database-check" aria-hidden="true"></i>
+                <span>DevSide | Banco de Dados Etec</span>
             </div>
-            <h1 class="hero-header__title">Exportar Contatos</h1>
+            <h1 class="hero-header__title">Exportar Alunos</h1>
             <p class="hero-header__subtitle" id="totalContatos">
-                Carregando registros salvos...
+                Conectando ao banco Supabase...
             </p>
             <div class="hero-header__divider" aria-hidden="true"></div>
         </header>
 
-        <section class="quiz-card" style="max-width: 520px; margin-inline: auto; text-align: center;">
+        <section class="quiz-card" style="max-width: 560px; margin-inline: auto; text-align: center;">
             <p class="winner-banner__desc" style="margin-bottom: var(--space-6);">
-                Exporte a lista de aventureiros registrada localmente neste navegador em formato JSON estruturado.
+                Baixe os registros de todos os alunos (`id`, `nome`, `celular`, `email`, `idade`, `area_vencedora`) salvos no banco de dados.
             </p>
 
-            <button type="button" class="btn-action" id="btnBaixarContatos">
-                <i class="bi bi-file-earmark-arrow-down-fill" aria-hidden="true"></i>
-                <span>Baixar Contatos (.txt)</span>
-            </button>
+            <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+                <button type="button" class="btn-action" id="btnBaixarCsv" disabled>
+                    <i class="bi bi-file-earmark-spreadsheet-fill" aria-hidden="true"></i>
+                    <span>Baixar Planilha (.csv para Excel)</span>
+                </button>
+
+                <button type="button" class="btn-action btn-action--secondary" id="btnBaixarJson" disabled>
+                    <i class="bi bi-filetype-json" aria-hidden="true"></i>
+                    <span>Baixar em JSON (.txt)</span>
+                </button>
+            </div>
         </section>
     </main>
 
     <script type="module">
-        import { getSavedContacts } from "./js/services/storageService.js";
+        import { fetchAllStudents } from "./js/services/storageService.js";
         import { animateInvalidShake } from "./js/ui/motionController.js";
 
-        document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", async () => {
             const totalEl = document.getElementById("totalContatos");
-            const downloadBtn = document.getElementById("btnBaixarContatos");
-            const contacts = getSavedContacts();
+            const btnCsv = document.getElementById("btnBaixarCsv");
+            const btnJson = document.getElementById("btnBaixarJson");
+
+            const { source, data: students } = await fetchAllStudents();
 
             if (totalEl) {
-                totalEl.textContent = `${contacts.length} contato(s) salvo(s) neste navegador`;
+                const originLabel = source === "supabase" ? "no Supabase" : "neste navegador (modo local)";
+                totalEl.textContent = `${students.length} aluno(s) registrado(s) ${originLabel}`;
             }
 
-            if (downloadBtn) {
-                if (contacts.length === 0) {
-                    downloadBtn.disabled = true;
+            if (students.length > 0) {
+                if (btnCsv) btnCsv.disabled = false;
+                if (btnJson) btnJson.disabled = false;
+            }
+
+            const triggerDownload = (content, filename, mimeType) => {
+                const blob = new Blob([content], { type: mimeType });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                URL.revokeObjectURL(url);
+            };
+
+            btnCsv?.addEventListener("click", () => {
+                if (students.length === 0) {
+                    animateInvalidShake(btnCsv);
+                    return;
                 }
 
-                downloadBtn.addEventListener("click", () => {
-                    const currentContacts = getSavedContacts();
-                    if (currentContacts.length === 0) {
-                        animateInvalidShake(downloadBtn);
-                        return;
-                    }
+                const headers = ["id", "nome", "celular", "email", "idade", "area_vencedora"];
+                const csvRows = [
+                    headers.join(";"),
+                    ...students.map((row, idx) =>
+                        [
+                            row.id ?? idx + 1,
+                            `"${String(row.nome ?? "").replace(/"/g, '""')}"`,
+                            `"${String(row.celular ?? "").replace(/"/g, '""')}"`,
+                            `"${String(row.email ?? "").replace(/"/g, '""')}"`,
+                            row.idade ?? "",
+                            `"${String(row.area_vencedora ?? "").replace(/"/g, '""')}"`
+                        ].join(";")
+                    )
+                ];
 
-                    const content = JSON.stringify(currentContacts, null, 2);
-                    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-                    const url = URL.createObjectURL(blob);
+                // BOM (\uFEFF) garante que o Excel abra acentos em UTF-8 corretamente
+                triggerDownload("\uFEFF" + csvRows.join("\r\n"), "alunos-devside.csv", "text/csv;charset=utf-8");
+            });
 
-                    const link = document.createElement("a");
-                    link.href = url;
-                    link.download = "contatos-devside.txt";
-                    document.body.appendChild(link);
-                    link.click();
-                    link.remove();
-                    URL.revokeObjectURL(url);
-                });
-            }
+            btnJson?.addEventListener("click", () => {
+                if (students.length === 0) {
+                    animateInvalidShake(btnJson);
+                    return;
+                }
+
+                const content = JSON.stringify(students, null, 2);
+                triggerDownload(content, "alunos-devside.txt", "text/plain;charset=utf-8");
+            });
         });
     </script>
 </body>

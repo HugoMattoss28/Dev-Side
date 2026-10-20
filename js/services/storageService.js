@@ -1,14 +1,14 @@
 /**
  * @file storageService.js
- * @description Persistência local segura (localStorage) e integração assíncrona
- *              com a planilha da coordenação (SheetMonkey API).
+ * @description Persistência no banco Supabase (via Vercel Serverless Function `/api/alunos`)
+ *              e backup local seguro via localStorage.
  */
 
 const LOCAL_STORAGE_KEY = "contatosDevside";
-const SHEETMONKEY_ENDPOINT = "https://api.sheetmonkey.io/form/8cBBsYzaLpR54UuK9HKCRL";
+const SUPABASE_API_ENDPOINT = "/api/alunos";
 
 /**
- * Lê a lista de contatos armazenada no navegador com tratamento de erro.
+ * Lê a lista de contatos armazenada localmente no navegador (backup/offline).
  * @returns {Array<Object>}
  */
 export const getSavedContacts = () => {
@@ -24,21 +24,22 @@ export const getSavedContacts = () => {
 };
 
 /**
- * Salva ou atualiza o registro de contato do jogador no localStorage.
+ * Salva ou atualiza o registro de contato do jogador no localStorage com as colunas enxutas.
  * @param {Object} params
  * @param {Object} params.profile
- * @param {string} [params.avatarPath=""]
+ * @param {string} [params.winnerKey=""]
  * @param {number|null} [params.existingIndex=null]
  * @returns {number|null} Índice do contato salvo
  */
-export const saveContactLocally = ({ profile, avatarPath = "", existingIndex = null }) => {
+export const saveContactLocally = ({ profile, winnerKey = "", existingIndex = null }) => {
     try {
         const contacts = getSavedContacts();
         const contactEntry = {
             nome: String(profile.fullName ?? "").trim(),
             celular: String(profile.phone ?? "").trim(),
-            avatar: avatarPath,
-            data: new Date().toLocaleString("pt-BR")
+            email: String(profile.email ?? "").trim().toLowerCase(),
+            idade: Number(profile.age ?? 0),
+            area_vencedora: winnerKey
         };
 
         let targetIndex = existingIndex;
@@ -59,29 +60,24 @@ export const saveContactLocally = ({ profile, avatarPath = "", existingIndex = n
 };
 
 /**
- * Envia os dados consolidados do jogador e o resultado do quiz para o SheetMonkey.
+ * Envia os dados do aluno (`nome`, `celular`, `email`, `idade`, `area_vencedora`)
+ * para o banco de dados Supabase através da rota `/api/alunos` da Vercel.
  * @param {Object} params
  * @param {Object} params.profile
  * @param {string} params.winnerKey
- * @param {Object|null} params.avatar
  * @returns {Promise<boolean>}
  */
-export const submitQuizTelemetry = async ({ profile, winnerKey, avatar }) => {
+export const submitQuizTelemetry = async ({ profile, winnerKey }) => {
     const payload = {
-        Nome: String(profile.fullName ?? "").trim(),
-        Apelido: String(profile.nickname ?? "").trim(),
-        Celular: String(profile.phone ?? "").trim(),
-        Email: String(profile.email ?? "").trim(),
-        Idade: String(profile.age ?? "").trim(),
-        Genero: String(profile.gender ?? "").trim(),
-        TomPele: String(profile.skinTone ?? "").trim(),
-        Area: winnerKey,
-        LinkAvatar: avatar?.imagePath ? `${window.location.origin}/${avatar.imagePath}` : "",
-        Data: new Date().toLocaleString("pt-BR")
+        nome: String(profile.fullName ?? "").trim(),
+        celular: String(profile.phone ?? "").trim(),
+        email: String(profile.email ?? "").trim().toLowerCase(),
+        idade: Number(profile.age ?? 0),
+        area_vencedora: String(winnerKey ?? "").trim()
     };
 
     try {
-        const response = await fetch(SHEETMONKEY_ENDPOINT, {
+        const response = await fetch(SUPABASE_API_ENDPOINT, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -90,14 +86,41 @@ export const submitQuizTelemetry = async ({ profile, winnerKey, avatar }) => {
         });
 
         if (!response.ok) {
-            console.warn("A planilha retornou um status inesperado:", response.status);
+            const errorBody = await response.json().catch(() => ({}));
+            console.warn("Aviso ao salvar no Supabase:", errorBody.error || response.status);
             return false;
         }
 
         return true;
     } catch (error) {
-        console.error("Falha de rede ao enviar dados para o SheetMonkey:", error);
+        console.error("Falha de rede ao enviar dados para /api/alunos:", error);
         return false;
     }
 };
 
+/**
+ * Busca todos os alunos salvos no Supabase (ou retorna o backup local caso esteja rodando offline).
+ * @returns {Promise<{ source: "supabase" | "local", data: Array<Object> }>}
+ */
+export const fetchAllStudents = async () => {
+    try {
+        const response = await fetch(SUPABASE_API_ENDPOINT, {
+            method: "GET",
+            headers: { Accept: "application/json" }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (Array.isArray(data)) {
+                return { source: "supabase", data };
+            }
+        }
+    } catch (error) {
+        console.warn("Banco remoto indisponível, utilizando backup local:", error);
+    }
+
+    return {
+        source: "local",
+        data: getSavedContacts()
+    };
+};

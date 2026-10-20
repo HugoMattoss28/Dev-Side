@@ -108,19 +108,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 email: currentState.profile.email
             });
 
-            // Atualiza o registro local com o caminho do avatar gerado
+            // Atualiza o registro local com a área vencedora
             const updatedIndex = saveContactLocally({
                 profile: currentState.profile,
-                avatarPath: avatar?.imagePath ?? "",
+                winnerKey: quizResult.winnerKey,
                 existingIndex: currentState.contactRecordIndex
             });
             store.setContactRecordIndex(updatedIndex);
 
-            // Envia telemetria de forma assíncrona sem bloquear a UI
+            // Envia os dados do aluno para o Supabase (/api/alunos) sem bloquear a UI
             submitQuizTelemetry({
                 profile: currentState.profile,
-                winnerKey: quizResult.winnerKey,
-                avatar
+                winnerKey: quizResult.winnerKey
             });
 
             if (quizSection) quizSection.hidden = true;
